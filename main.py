@@ -68,7 +68,7 @@ from database import (
 )
 from p_scraper import scrape_college_info
 from dotenv import load_dotenv
-load_dotenv()  # Load environment variables from .env file
+load_dotenv(dotenv_path=Path(__file__).parent / ".env")
 # ── MEGA ──────────────────────────────────────────────────────────────────────
 try:
     from mega import Mega
