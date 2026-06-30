@@ -66,7 +66,7 @@ from database import (
     db_get_college_insights, db_set_college_insights,
     db_get_scrape,
 )
-from perplexity_scraper import scrape_college_info
+from p_scraper import scrape_college_info
 from dotenv import load_dotenv
 load_dotenv()  # Load environment variables from .env file
 # ── MEGA ──────────────────────────────────────────────────────────────────────
