@@ -15,18 +15,18 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ── Web framework ──────────────────────────────────────────────────────────────
-fastapi==0.111.0
-uvicorn[standard]==0.29.0
-python-multipart==0.0.9        # UploadFile / File support in FastAPI
-jinja2==3.1.4                  # Jinja2Templates (index.html rendering)
+fastapi
+uvicorn[standard]
+python-multipart     # UploadFile / File support in FastAPI
+jinja2               # Jinja2Templates (index.html rendering)
 
 # ── Data ──────────────────────────────────────────────────────────────────────
-pandas==2.2.2
-openpyxl==3.1.3                # .xlsx parsing for JEE cutoff + college data files
-pydantic==2.7.1                # Request / response models (BaseModel, Field)
+pandas
+openpyxl               # .xlsx parsing for JEE cutoff + college data files
+pydantic              # Request / response models (BaseModel, Field)
 
 # ── AI — Primary (Groq) ───────────────────────────────────────────────────────
-groq>=0.11.0                   # from groq import Groq  (LLaMA-3.3-70B-Versatile)
+groq              # from groq import Groq  (LLaMA-3.3-70B-Versatile)
 # groq 0.9.0 passes proxies= to httpx.Client which was removed in httpx 0.28.0
 # → TypeError: Client.__init__() got an unexpected keyword argument 'proxies'
 # Fix: groq>=0.11.0 uses the new httpx proxy= API
@@ -35,23 +35,23 @@ httpx>=0.27.0,<0.29.0          # pin to avoid future httpx breaking changes with
 # ── AI — Secondary / Optional (Google Gemini) ────────────────────────────────
 # Used via: from google import genai  (google-genai SDK, NOT google-generativeai)
 # Wrapped in try/except — app runs fine without it if GOOGLE_GEMINI_API_KEY is unset
-google-genai>=1.0.0
+google-genai
 
 # ── Database (TiDB / MySQL-compatible) ────────────────────────────────────────
-mysql-connector-python==8.4.0  # Connection pool + all DB operations in database.py
+mysql-connector-python  # Connection pool + all DB operations in database.py
 
 # ── Cloud storage (MEGA) ──────────────────────────────────────────────────────
 # pycrypto (mega.py's default dep) is broken on Python 3.12+ — use pycryptodome instead.
 # pycryptodome provides the same `Crypto` namespace as pycrypto, so mega.py works as-is.
-pycryptodome>=3.19.0           # Replaces dead pycrypto package; same Crypto.* API
+pycryptodome       # Replaces dead pycrypto package; same Crypto.* API
 # Install mega.py WITHOUT its own deps to avoid pip pulling in pycrypto:
 #   pip install mega.py==1.0.0 --no-deps
 mega.py
-requests==2.32.3               # Used internally by mega.py
+requests          # Used internally by mega.py
 
 # ── Selenium (Perplexity scraper) ─────────────────────────────────────────────
-selenium==4.21.0               # Headless Chrome automation in p_scraper.py
-webdriver-manager==4.0.1       # Auto-downloads / manages ChromeDriver
+selenium           # Headless Chrome automation in p_scraper.py
+webdriver-manager     # Auto-downloads / manages ChromeDriver
 
 # ── Utilities ─────────────────────────────────────────────────────────────────
-python-dotenv==1.0.1           # load_dotenv() in main.py and database.py
+python-dotenv       # load_dotenv() in main.py and database.py
