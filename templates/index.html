@@ -1,0 +1,2115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JEE 2026 College Advisor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --primary:#00e5ff; --primary-dark:#0091ea; --accent:#ff2ec4;
+  --success:#00ffaa; --warning:#ffb84d; --danger:#ff4d6d;
+  --bg:#05060f; --card:rgba(18,22,42,0.62); --text:#e8f6ff;
+  --muted:#8fa3c7; --border:rgba(0,229,255,0.25); --radius:14px;
+  --shadow:0 8px 40px rgba(0,229,255,0.18), 0 0 0 1px rgba(0,229,255,0.08) inset;
+  --iit:#c084fc; --nit:#5ee0ff; --iiit:#5cffc4; --other:#ffcb6b;
+  --iit-bg:rgba(192,132,252,0.10); --nit-bg:rgba(94,224,255,0.10);
+  --iiit-bg:rgba(92,255,196,0.10); --other-bg:rgba(255,203,107,0.10);
+  --safe-zone:#39ffb0; --safe-zone-bg:rgba(57,255,176,0.12);
+  --sc-bg:#0a0e1f; --sc-sidebar:#0d1226; --sc-surface:rgba(20,26,52,0.85);
+  --sc-surface2:rgba(28,36,68,0.9); --sc-border:rgba(0,229,255,0.18); --sc-text:#cfe8ff;
+  --sc-text-muted:#7c93c2; --sc-text-bright:#f2fbff;
+  --sc-accent:#00e5ff; --sc-accent-hover:#26f0ff;
+  --sc-green:#39ffb0; --sc-red:#ff4d6d; --sc-yellow:#ffe066;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Inter','Segoe UI',system-ui,sans-serif;color:var(--text);
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0,229,255,0.20), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 100% 10%, rgba(255,46,196,0.16), transparent 60%),
+    radial-gradient(ellipse 60% 60% at 50% 110%, rgba(124,77,255,0.18), transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+  position:relative;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.5;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.045) 1px, transparent 1px);
+  background-size:42px 42px;
+  animation:gridDrift 22s linear infinite;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 20%, black, transparent 75%);
+}
+@keyframes gridDrift{0%{background-position:0 0}100%{background-position:42px 42px}}
+::selection{background:rgba(0,229,255,0.35);color:#fff}
+
+/* ── Header ── */
+header{
+  background:linear-gradient(120deg, rgba(8,12,30,0.9), rgba(20,12,46,0.9));
+  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  color:white;padding:16px 32px;display:flex;align-items:center;gap:16px;
+  box-shadow:0 2px 30px rgba(0,229,255,0.25), 0 1px 0 rgba(0,229,255,0.3) inset;
+  flex-shrink:0;position:relative;z-index:10;border-bottom:1px solid rgba(0,229,255,0.25);
+}
+header::after{
+  content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;
+  background:linear-gradient(90deg, transparent, var(--primary), var(--accent), transparent);
+  animation:scanline 4s ease-in-out infinite;
+}
+@keyframes scanline{0%,100%{opacity:0.3;transform:scaleX(0.7)}50%{opacity:1;transform:scaleX(1)}}
+.header-community-btn{
+  margin-left:auto;display:flex;align-items:center;gap:8px;padding:9px 18px;
+  background:rgba(0,229,255,0.08);border:1.5px solid rgba(0,229,255,0.45);border-radius:24px;
+  color:#d8fbff;font-weight:700;font-size:0.88rem;cursor:pointer;text-decoration:none;
+  transition:all 0.25s;white-space:nowrap;box-shadow:0 0 16px rgba(0,229,255,0.15) inset;
+}
+.header-community-btn:hover{background:rgba(0,229,255,0.2);border-color:var(--primary);transform:translateY(-2px);box-shadow:0 0 22px rgba(0,229,255,0.5)}
+header .logo{font-size:2rem;filter:drop-shadow(0 0 10px rgba(0,229,255,0.7));animation:floaty 3.5s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+header h1{
+  font-family:'Orbitron',sans-serif;font-size:1.42rem;font-weight:700;line-height:1.2;
+  background:linear-gradient(90deg,#fff,var(--primary) 60%,var(--accent));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  letter-spacing:0.02em;text-shadow:0 0 30px rgba(0,229,255,0.25);
+}
+header p{font-size:0.82rem;opacity:0.75;color:var(--muted)}
+
+/* ── Layout ── */
+.container{display:flex;height:calc(100vh - 76px);overflow:hidden;position:relative;z-index:1}
+.sidebar{
+  width:360px;min-width:310px;background:var(--card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-right:1px solid var(--border);overflow-y:auto;padding:20px;flex-shrink:0;
+  box-shadow:4px 0 30px rgba(0,229,255,0.07);
+}
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column}
+
+/* ── Sidebar form ── */
+.form-section{margin-bottom:18px}
+.form-section h3{
+  font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--primary);
+  margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);
+  text-shadow:0 0 12px rgba(0,229,255,0.4);
+}
+label{display:block;font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:4px}
+input[type=number],input[type=text],select{
+  width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.87rem;
+  color:var(--text);background:rgba(10,14,30,0.6);transition:border-color 0.2s,box-shadow 0.2s;margin-bottom:12px;
+}
+select[multiple]{min-height:180px;padding:6px 4px}
+select[multiple] option{padding:6px 10px;border-radius:6px;margin:2px 0;font-size:0.83rem;cursor:pointer;background:transparent;color:var(--text)}
+select[multiple] option:checked{background:linear-gradient(90deg, rgba(0,229,255,0.35), rgba(255,46,196,0.25));color:#fff;font-weight:600}
+input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,229,255,0.18), 0 0 18px rgba(0,229,255,0.25);background:rgba(10,14,30,0.85)}
+.rank-hint{font-size:0.72rem;color:var(--muted);margin-top:-8px;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.btn{display:block;width:100%;padding:11px;border:none;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;transition:all 0.25s;letter-spacing:0.02em}
+.btn-primary{
+  background:linear-gradient(115deg, var(--primary), #7c4dff 55%, var(--accent));
+  background-size:200% 100%;color:#06101c;box-shadow:0 0 24px rgba(0,229,255,0.35);
+}
+.btn-primary:hover{background-position:100% 0;transform:translateY(-2px);box-shadow:0 6px 30px rgba(0,229,255,0.55)}
+.btn-primary:disabled{opacity:0.55;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ── Category note / badges ── */
+.category-note{font-size:0.74rem;background:rgba(255,184,77,0.1);border:1px solid rgba(255,184,77,0.4);color:#ffd699;border-radius:8px;padding:8px 10px;margin:-4px 0 12px;line-height:1.5;display:none}
+.category-note.show{display:block}
+.category-badge{display:inline-block;font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(0,229,255,0.12);color:var(--primary);border:1px solid rgba(0,229,255,0.4);margin-left:6px;vertical-align:middle}
+.category-badge.estimated{background:rgba(255,184,77,0.12);color:#ffd699;border-color:rgba(255,184,77,0.4)}
+.btn-link{background:none;border:none;color:var(--primary);font-size:0.74rem;font-weight:600;cursor:pointer;text-decoration:underline;padding:0;margin-bottom:10px;display:inline-block}
+
+/* ── Tabs ── */
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--border);flex-shrink:0;padding:0 24px;background:rgba(10,14,30,0.5);backdrop-filter:blur(12px)}
+.tab{padding:10px 18px;border-radius:8px 8px 0 0;cursor:pointer;font-size:0.87rem;font-weight:600;color:var(--muted);border:1px solid transparent;border-bottom:none;transition:all 0.2s}
+.tab:hover{color:var(--text)}
+.tab.active{
+  background:rgba(0,229,255,0.08);color:var(--primary);border-color:var(--border);margin-bottom:-1px;
+  border-bottom:2px solid var(--primary);text-shadow:0 0 10px rgba(0,229,255,0.5);
+}
+.tab-panel{display:none;flex:1;overflow:hidden;flex-direction:column}
+.tab-panel.active{display:flex}
+
+#tab-results{overflow-y:auto;padding:24px}
+#tab-predictor{overflow-y:auto;padding:24px}
+
+/* ── Filter bar ── */
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.filter-bar input{flex:1;min-width:150px;margin-bottom:0}
+.filter-bar select{width:auto;margin-bottom:0}
+#result-count{font-size:0.83rem;color:var(--muted);margin-bottom:14px}
+
+/* ── Legend ── */
+.results-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;font-size:0.75rem;padding:10px 12px;background:rgba(10,14,30,0.55);border-radius:8px;border:1px solid var(--border)}
+.legend-item{display:flex;align-items:center;gap:5px;font-weight:600;color:var(--text)}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;box-shadow:0 0 8px currentColor}
+
+/* ── Institution group headers ── */
+.inst-group-header{
+  display:flex;align-items:center;gap:10px;margin:20px 0 10px;padding:12px 14px;border-radius:10px;
+  font-weight:800;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.07em;
+  backdrop-filter:blur(10px);position:relative;overflow:hidden;
+}
+.inst-group-header.iit {background:var(--iit-bg);color:var(--iit);border-left:3px solid var(--iit);box-shadow:0 0 18px rgba(192,132,252,0.18)}
+.inst-group-header.nit {background:var(--nit-bg);color:var(--nit);border-left:3px solid var(--nit);box-shadow:0 0 18px rgba(94,224,255,0.18)}
+.inst-group-header.iiit{background:var(--iiit-bg);color:var(--iiit);border-left:3px solid var(--iiit);box-shadow:0 0 18px rgba(92,255,196,0.18)}
+.inst-group-header.other{background:var(--other-bg);color:var(--other);border-left:3px solid var(--other);box-shadow:0 0 18px rgba(255,203,107,0.18)}
+.inst-group-desc{font-size:0.7rem;font-weight:500;opacity:0.8;text-transform:none;letter-spacing:0}
+
+/* ── Zone sub-headers ── */
+.zone-header{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:6px 4px;margin:10px 0 6px;display:flex;align-items:center;gap:6px}
+.zone-header.safe-zone{color:var(--safe-zone);text-shadow:0 0 8px rgba(57,255,176,0.4)}
+.zone-header.match-zone{color:var(--accent);text-shadow:0 0 8px rgba(255,46,196,0.4)}
+.zone-header.other-zone{color:var(--muted)}
+
+/* ── Result cards — holographic glass ── */
+.result-card{
+  background:linear-gradient(160deg, rgba(20,26,52,0.7), rgba(12,16,34,0.7));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-radius:var(--radius);border:1px solid var(--border);padding:14px 16px;margin-bottom:8px;
+  transition:all 0.25s;cursor:pointer;position:relative;overflow:hidden;
+}
+.result-card::before{
+  content:'';position:absolute;inset:0;border-radius:var(--radius);padding:1px;
+  background:linear-gradient(120deg, transparent, rgba(0,229,255,0.4), transparent 60%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity 0.3s;pointer-events:none;
+}
+.result-card:hover{border-color:var(--primary);box-shadow:var(--shadow);transform:translateY(-3px)}
+.result-card:hover::before{opacity:1}
+.result-card.in-safe-zone{border-left:3px solid var(--safe-zone)}
+.result-card.preferred{border-left:3px solid var(--accent)}
+.result-card.in-safe-zone.preferred{border-left:3px solid var(--safe-zone)}
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.institute{font-weight:700;font-size:0.93rem;color:var(--primary);text-shadow:0 0 10px rgba(0,229,255,0.25)}
+.program{font-size:0.8rem;color:var(--muted);margin-top:3px}
+.pref-star{color:var(--accent);font-size:0.73rem;margin-top:2px;text-shadow:0 0 8px rgba(255,46,196,0.4)}
+.safe-zone-tag{font-size:0.68rem;background:var(--safe-zone-bg);color:var(--safe-zone);border:1px solid rgba(57,255,176,0.4);border-radius:6px;padding:2px 7px;font-weight:700;display:inline-flex;align-items:center;gap:3px;margin-top:3px}
+.est-tag{font-size:0.65rem;background:rgba(255,184,77,0.12);color:#ffd699;border:1px solid rgba(255,184,77,0.4);border-radius:6px;padding:1px 6px;font-weight:700;display:inline-flex;align-items:center;gap:3px;margin-top:3px;margin-left:6px}
+.card-footer{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.stat{font-size:0.76rem;color:var(--muted)}
+.stat strong{color:var(--text)}
+.rank-source-tag{font-size:0.68rem;background:rgba(255,255,255,0.04);color:var(--muted);padding:2px 6px;border-radius:6px;border:1px solid var(--border)}
+
+/* ── Badges ── */
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:0.7rem;font-weight:700;white-space:nowrap}
+.badge-iit {background:rgba(192,132,252,0.16);color:var(--iit)}
+.badge-nit {background:rgba(94,224,255,0.16);color:var(--nit)}
+.badge-iiit{background:rgba(92,255,196,0.16);color:var(--iiit)}
+.badge-other{background:rgba(255,203,107,0.16);color:var(--other)}
+.badge-safe    {background:rgba(57,255,176,0.16);color:var(--safe-zone)}
+.badge-good    {background:rgba(94,224,255,0.16);color:var(--nit)}
+.badge-moderate{background:rgba(255,224,102,0.16);color:#ffe066}
+.badge-reach   {background:rgba(255,77,109,0.16);color:var(--danger)}
+
+/* ── Probability bar ── */
+.prob-bar-wrap{display:flex;align-items:center;gap:6px;margin-top:6px}
+.prob-bar{height:5px;border-radius:3px;background:rgba(255,255,255,0.08);flex:1;max-width:100px;overflow:hidden}
+.prob-fill{height:100%;border-radius:3px;transition:width 0.4s}
+.prob-fill.safe    {background:var(--safe-zone);box-shadow:0 0 8px var(--safe-zone)}
+.prob-fill.good    {background:var(--nit);box-shadow:0 0 8px var(--nit)}
+.prob-fill.moderate{background:#ffe066;box-shadow:0 0 8px #ffe066}
+.prob-fill.reach   {background:var(--danger);box-shadow:0 0 8px var(--danger)}
+.prob-pct{font-size:0.68rem;font-weight:700}
+.prob-pct.safe    {color:var(--safe-zone)}
+.prob-pct.good    {color:var(--nit)}
+.prob-pct.moderate{color:#ffe066}
+.prob-pct.reach   {color:var(--danger)}
+
+/* ── Info banner ── */
+.rank-info-banner{font-size:0.8rem;background:rgba(0,229,255,0.06);border-radius:8px;padding:10px 14px;margin-bottom:14px;display:none;border-left:3px solid var(--primary)}
+.rank-info-banner .banner-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.rank-info-banner .banner-row:last-child{margin-bottom:0}
+
+/* ── Modal ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(2,4,12,0.75);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex;animation:fadeIn 0.2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:linear-gradient(160deg, rgba(16,20,42,0.97), rgba(8,10,24,0.98));
+  border:1px solid var(--border);border-radius:16px;width:90%;max-width:760px;max-height:88vh;overflow-y:auto;
+  box-shadow:0 24px 80px rgba(0,229,255,0.2), 0 0 0 1px rgba(0,229,255,0.08) inset;
+  animation:modalIn 0.25s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(12px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal-header{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start}
+.modal-title{font-size:1.1rem;font-weight:700;color:var(--primary);text-shadow:0 0 12px rgba(0,229,255,0.4)}
+.modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted);line-height:1;padding:4px;transition:color 0.2s}
+.modal-close:hover{color:var(--danger)}
+.modal-body{padding:18px 22px}
+.info-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:0.84rem}
+.info-row a{color:var(--primary);text-decoration:none;font-weight:600}
+.insights-box{background:rgba(0,229,255,0.05);border:1px solid var(--border);border-radius:10px;padding:14px;margin:14px 0;font-size:0.83rem;line-height:1.7;white-space:pre-wrap}
+.programs-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-top:10px}
+.programs-table th{background:rgba(0,229,255,0.07);padding:7px 9px;text-align:left;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border)}
+.programs-table td{padding:6px 9px;border-bottom:1px solid var(--border)}
+.programs-table tr:hover td{background:rgba(0,229,255,0.05)}
+.section-title{font-weight:700;font-size:0.82rem;color:var(--primary);text-transform:uppercase;letter-spacing:0.07em;margin:14px 0 7px}
+
+/* ── Chat Tab ── */
+#tab-chat{display:none;flex-direction:column;overflow:hidden}
+#tab-chat.active{display:flex}
+.chat-messages{flex:1;overflow-y:auto;padding:16px 24px;display:flex;flex-direction:column;gap:10px;min-height:0}
+.chat-msg{max-width:78%;padding:10px 14px;border-radius:14px;font-size:0.85rem;line-height:1.6}
+.chat-msg.user{background:linear-gradient(120deg, var(--primary), #7c4dff);color:#06101c;align-self:flex-end;border-bottom-right-radius:4px;box-shadow:0 0 16px rgba(0,229,255,0.3);font-weight:500}
+.chat-msg.assistant{background:rgba(20,26,52,0.7);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px;white-space:pre-wrap;backdrop-filter:blur(10px)}
+.chat-msg.assistant.loading{color:var(--muted);font-style:italic}
+.chat-input-area{flex-shrink:0;display:flex;gap:8px;padding:12px 24px 16px;border-top:1px solid var(--border);background:rgba(10,14,30,0.6);backdrop-filter:blur(12px)}
+.chat-input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:0.87rem;resize:none;height:44px;min-height:44px;max-height:120px;font-family:inherit;background:rgba(10,14,30,0.6);color:var(--text)}
+.chat-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,229,255,0.18)}
+.chat-send{padding:10px 16px;background:linear-gradient(120deg, var(--primary), #7c4dff);color:#06101c;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.87rem;transition:all 0.2s;flex-shrink:0;box-shadow:0 0 16px rgba(0,229,255,0.3)}
+.chat-send:hover{transform:translateY(-2px);box-shadow:0 0 22px rgba(0,229,255,0.5)}
+.chat-send:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.chat-welcome{text-align:center;padding:32px 20px;color:var(--muted)}
+.chat-welcome .icon{font-size:3rem;margin-bottom:12px;filter:drop-shadow(0 0 12px rgba(0,229,255,0.5))}
+.quick-questions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;justify-content:center}
+.quick-q{padding:6px 12px;border:1px solid var(--border);border-radius:20px;font-size:0.77rem;cursor:pointer;transition:all 0.2s;background:rgba(20,26,52,0.6);color:var(--text)}
+.quick-q:hover{border-color:var(--primary);color:var(--primary);background:rgba(0,229,255,0.1);box-shadow:0 0 12px rgba(0,229,255,0.2)}
+.empty-state{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty-state .icon{font-size:3rem;margin-bottom:12px;filter:drop-shadow(0 0 12px rgba(0,229,255,0.4))}
+.loading-spinner{display:inline-block;width:18px;height:18px;border:3px solid rgba(0,229,255,0.2);border-top-color:#06101c;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ══════════════════════════════════════════
+   PREDICTOR TAB
+══════════════════════════════════════════ */
+.predictor-grid{display:grid;grid-template-columns:380px 1fr;gap:20px;max-width:1100px;margin:0 auto}
+@media(max-width:900px){.predictor-grid{grid-template-columns:1fr}}
+.predictor-card{
+  background:linear-gradient(160deg, rgba(20,26,52,0.7), rgba(12,16,34,0.7));backdrop-filter:blur(14px);
+  border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);
+}
+.predictor-card h3{font-size:0.95rem;font-weight:700;margin-bottom:14px;color:var(--primary);text-shadow:0 0 10px rgba(0,229,255,0.3)}
+.predictor-card h4{font-size:0.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin:14px 0 8px}
+.predictor-card h4:first-child{margin-top:0}
+.predictor-results{display:flex;flex-direction:column;gap:14px}
+.pr-stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+.pr-stat{background:rgba(0,229,255,0.05);border:1px solid var(--border);border-radius:10px;padding:12px;transition:transform 0.2s}
+.pr-stat:hover{transform:translateY(-2px)}
+.pr-stat .pr-label{font-size:0.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px}
+.pr-stat .pr-value{font-size:1.25rem;font-weight:800;color:var(--primary);text-shadow:0 0 12px rgba(0,229,255,0.4)}
+.pr-stat .pr-sub{font-size:0.7rem;color:var(--muted);margin-top:2px}
+.pr-narrative{background:rgba(0,229,255,0.05);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:0.85rem;line-height:1.75;white-space:pre-wrap}
+.pr-branch-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,0.02);transition:border-color 0.2s}
+.pr-branch-row:hover{border-color:var(--primary)}
+.pr-branch-name{font-weight:600;font-size:0.85rem;text-transform:capitalize}
+.pr-branch-meta{font-size:0.72rem;color:var(--muted)}
+.pr-warning-box{font-size:0.78rem;background:rgba(255,184,77,0.1);border:1px solid rgba(255,184,77,0.4);color:#ffd699;border-radius:8px;padding:10px 12px;line-height:1.6}
+.tabs-mini{display:flex;gap:6px;margin-bottom:14px;border-bottom:1px solid var(--border)}
+.tab-mini{padding:7px 14px;font-size:0.78rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color 0.2s}
+.tab-mini.active{color:var(--primary);border-bottom-color:var(--primary);text-shadow:0 0 8px rgba(0,229,255,0.4)}
+.predictor-input-group{display:none}
+.predictor-input-group.active{display:block}
+
+/* ══════════════════════════════════════════
+   STUDYCORD — holographic chat
+══════════════════════════════════════════ */
+#tab-community{display:none;flex-direction:column;overflow:hidden;background:var(--sc-bg)}
+#tab-community.active{display:flex}
+
+.sc-modal-overlay{display:none;position:fixed;inset:0;background:rgba(2,4,12,0.8);backdrop-filter:blur(4px);z-index:300;align-items:center;justify-content:center}
+.sc-modal-overlay.visible{display:flex;animation:fadeIn 0.2s ease}
+.sc-modal-box{
+  background:linear-gradient(160deg, rgba(20,26,52,0.97), rgba(10,14,30,0.98));border:1px solid var(--sc-border);
+  border-radius:14px;padding:1.8rem;width:90%;max-width:440px;display:flex;flex-direction:column;gap:0.9rem;
+  box-shadow:0 24px 70px rgba(0,229,255,0.2);animation:modalIn 0.25s ease;
+}
+.sc-modal-box h2{color:var(--sc-text-bright);font-size:1.35rem;font-weight:800;text-shadow:0 0 14px rgba(0,229,255,0.35)}
+.sc-modal-box p{color:var(--sc-text-muted);font-size:0.88rem}
+.sc-modal-logo{font-size:2.8rem;text-align:center;filter:drop-shadow(0 0 16px rgba(0,229,255,0.5))}
+.sc-modal-box input,.sc-modal-box select{background:rgba(5,7,18,0.7);border:1.5px solid var(--sc-border);color:var(--sc-text-bright);border-radius:6px;padding:0.65rem 0.9rem;font-size:0.93rem;font-family:inherit;width:100%;margin-bottom:0;transition:border-color 0.2s}
+.sc-modal-box input:focus,.sc-modal-box select:focus{outline:none;border-color:var(--sc-accent);box-shadow:0 0 0 3px rgba(0,229,255,0.15)}
+.sc-modal-box input::placeholder{color:var(--sc-text-muted)}
+.sc-code-display{
+  background:rgba(0,229,255,0.06);border-radius:8px;padding:1.2rem;text-align:center;font-size:2rem;font-weight:800;
+  letter-spacing:0.4rem;color:var(--sc-accent);border:2px dashed var(--sc-accent);cursor:pointer;transition:background 0.2s;
+  text-shadow:0 0 18px rgba(0,229,255,0.5);
+}
+.sc-code-display.copied{background:rgba(57,255,176,0.12);color:var(--sc-green);text-shadow:0 0 18px rgba(57,255,176,0.5)}
+.sc-code-hint{font-size:0.8rem;color:var(--sc-text-muted);text-align:center}
+#sc-join-error{color:var(--sc-red);font-size:0.8rem;display:none}
+
+.sc-app{display:flex;width:100%;flex:1;overflow:hidden;font-family:'Inter',sans-serif;min-height:0}
+
+.sc-sidebar{width:72px;background:rgba(5,7,18,0.6);backdrop-filter:blur(14px);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;flex-shrink:0;border-right:1px solid var(--sc-border)}
+.sc-sidebar-logo{
+  width:48px;height:48px;background:linear-gradient(135deg, var(--sc-accent), #7c4dff);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;color:#06101c;cursor:pointer;
+  transition:border-radius 0.2s;margin-bottom:4px;box-shadow:0 0 18px rgba(0,229,255,0.4);
+}
+.sc-sidebar-logo:hover{border-radius:16px}
+.sc-sidebar-divider{width:32px;height:1px;background:var(--sc-border);margin:4px 0}
+.sc-nav-btn{width:48px;height:48px;background:var(--sc-surface2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;color:var(--sc-text-muted);border:none;position:relative}
+.sc-nav-btn:hover{border-radius:16px;background:var(--sc-accent);color:#06101c;box-shadow:0 0 16px rgba(0,229,255,0.4)}
+.sc-nav-btn.active{border-radius:16px;background:var(--sc-accent);color:#06101c;box-shadow:0 0 16px rgba(0,229,255,0.4)}
+.sc-nav-btn::before{content:'';position:absolute;left:-4px;top:50%;transform:translateY(-50%);width:4px;border-radius:0 4px 4px 0;background:var(--sc-accent);transition:height 0.15s;height:0}
+.sc-nav-btn.active::before{height:20px}
+.sc-nav-btn:hover::before{height:8px}
+.sc-sidebar-spacer{flex:1}
+.sc-sidebar-user{width:48px;height:48px;cursor:pointer}
+.sc-avatar-sm{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;color:#06101c;transition:border-radius 0.15s;box-shadow:0 0 14px rgba(0,229,255,0.3)}
+.sc-avatar-sm:hover{border-radius:16px}
+
+.sc-panel{flex:1;display:flex;flex-direction:column;background:transparent;overflow:hidden;min-height:0}
+#sc-groups-panel{flex-direction:row}
+.sc-panel.hidden{display:none}
+
+.sc-panel-header{background:rgba(5,7,18,0.55);backdrop-filter:blur(10px);border-bottom:1px solid var(--sc-border);padding:0 16px;height:48px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sc-panel-header h2{font-size:1rem;font-weight:700;color:var(--sc-text-bright)}
+.sc-live-dot{width:8px;height:8px;border-radius:50%;background:var(--sc-green);display:inline-block;margin-right:6px;animation:pulse-live 2s infinite;box-shadow:0 0 8px var(--sc-green)}
+@keyframes pulse-live{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+.sc-conn-status{font-size:0.72rem;color:var(--sc-text-muted);display:flex;align-items:center;gap:4px}
+.sc-conn-status.disconnected .sc-live-dot{background:var(--sc-red);animation:none;box-shadow:0 0 8px var(--sc-red)}
+
+.sc-message-list{flex:1;overflow-y:auto;padding:16px 0;min-height:0}
+.sc-composer-wrap{flex-shrink:0;padding:10px 16px 14px;border-top:1px solid var(--sc-border);background:rgba(8,10,24,0.7);backdrop-filter:blur(12px);margin:0!important}
+
+.sc-media-preview{display:none;position:relative;margin-bottom:8px;border-radius:8px;overflow:hidden;max-width:300px}
+.sc-media-preview.show{display:block}
+.sc-media-preview img,.sc-media-preview video{max-width:100%;max-height:200px;border-radius:8px;display:block}
+.sc-media-preview .sc-media-remove{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.7);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center}
+
+.sc-composer{display:flex;align-items:center;gap:8px;background:var(--sc-surface2);border-radius:26px;padding:6px 8px 6px 16px;border:1.5px solid var(--sc-border);transition:border-color 0.2s,box-shadow 0.2s}
+.sc-composer:focus-within{border-color:var(--sc-accent);box-shadow:0 0 16px rgba(0,229,255,0.25)}
+.sc-composer input{flex:1;background:transparent;border:none;color:var(--sc-text-bright);font-size:0.93rem;font-family:inherit;padding:6px 4px}
+.sc-composer input:focus{outline:none}
+.sc-composer input::placeholder{color:var(--sc-text-muted)}
+.sc-media-btn{background:none;border:none;color:var(--sc-text-muted);cursor:pointer;padding:6px;border-radius:50%;font-size:1.1rem;transition:all 0.15s;display:flex;align-items:center;width:34px;height:34px;justify-content:center}
+.sc-media-btn:hover{color:var(--sc-accent);background:rgba(0,229,255,0.1)}
+.sc-media-upload-input{display:none}
+.sc-send-btn{width:38px;height:38px;background:linear-gradient(135deg, var(--sc-accent), #7c4dff);border:none;border-radius:50%;color:#06101c;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;box-shadow:0 0 14px rgba(0,229,255,0.35)}
+.sc-send-btn:hover{transform:scale(1.1);box-shadow:0 0 20px rgba(0,229,255,0.55)}
+.sc-send-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.sc-uploading{font-size:0.78rem;color:var(--sc-text-muted);padding:4px 8px;font-style:italic}
+
+.sc-post-card{display:flex;gap:12px;padding:10px 16px;transition:background 0.1s}
+.sc-post-card:hover{background:rgba(0,229,255,0.04)}
+.sc-post-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:#06101c;flex-shrink:0;box-shadow:0 0 12px rgba(0,229,255,0.25)}
+.sc-post-body{flex:1;min-width:0}
+.sc-post-meta{display:flex;align-items:baseline;gap:8px;margin-bottom:2px;flex-wrap:wrap}
+.sc-post-author{font-weight:600;font-size:0.93rem;color:var(--sc-text-bright)}
+.sc-post-time{font-size:0.7rem;color:var(--sc-text-muted)}
+.sc-post-content{font-size:0.91rem;color:var(--sc-text);line-height:1.5;word-break:break-word}
+.sc-post-media{margin-top:8px;border-radius:8px;overflow:hidden;max-width:480px;border:1px solid var(--sc-border)}
+.sc-post-media img{max-width:100%;max-height:360px;object-fit:contain;border-radius:8px;display:block;cursor:pointer}
+.sc-post-media video{max-width:100%;max-height:360px;border-radius:8px;display:block}
+.sc-post-actions{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap}
+.sc-rxn-bar{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.sc-rxn-btn{background:var(--sc-surface);border:1px solid var(--sc-border);border-radius:6px;padding:2px 8px;font-size:0.8rem;cursor:pointer;color:var(--sc-text-muted);transition:all 0.15s}
+.sc-rxn-btn:hover,.sc-rxn-btn.active{background:rgba(0,229,255,0.15);border-color:var(--sc-accent);color:var(--sc-accent)}
+.sc-rxn-add{position:relative}
+.sc-rxn-trigger{background:var(--sc-surface);border:1px solid var(--sc-border);border-radius:6px;padding:2px 8px;font-size:0.8rem;cursor:pointer;color:var(--sc-text-muted);transition:all 0.15s}
+.sc-rxn-trigger:hover{background:var(--sc-accent);color:#06101c;border-color:var(--sc-accent)}
+.sc-rxn-picker{display:none;position:absolute;bottom:110%;left:0;background:var(--sc-surface2);border:1px solid var(--sc-border);border-radius:8px;padding:6px;gap:4px;z-index:50;box-shadow:0 8px 30px rgba(0,229,255,0.2);white-space:nowrap}
+.sc-rxn-picker.show{display:flex}
+.sc-rxn-picker button{background:none;border:none;font-size:1.1rem;cursor:pointer;padding:4px;border-radius:4px;transition:background 0.1s}
+.sc-rxn-picker button:hover{background:var(--sc-surface)}
+.sc-comment-toggle{background:none;border:none;color:var(--sc-text-muted);font-size:0.8rem;cursor:pointer;padding:2px 6px;border-radius:4px;transition:background 0.1s}
+.sc-comment-toggle:hover{background:var(--sc-surface);color:var(--sc-text-bright)}
+.sc-delete-btn{background:none;border:none;color:var(--sc-text-muted);font-size:0.75rem;cursor:pointer;padding:2px 6px;border-radius:4px;opacity:0;transition:all 0.15s}
+.sc-post-card:hover .sc-delete-btn{opacity:1}
+.sc-delete-btn:hover{background:rgba(255,77,109,0.2);color:var(--sc-red)}
+.sc-gc-msg:hover .sc-delete-btn{opacity:1}
+.sc-comments-section{margin-top:8px;padding-top:8px;border-top:1px solid var(--sc-border)}
+.sc-comments-section.hidden{display:none}
+.sc-comment{display:flex;gap:8px;margin-bottom:8px;position:relative}
+.sc-comment:hover .sc-delete-btn{opacity:1}
+.sc-comment-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:#06101c;flex-shrink:0;box-shadow:0 0 10px rgba(0,229,255,0.25)}
+.sc-comment-author{font-size:0.8rem;font-weight:600;color:var(--sc-text-bright)}
+.sc-comment-time{font-size:0.68rem;color:var(--sc-text-muted)}
+.sc-comment-text{font-size:0.83rem;color:var(--sc-text);margin-top:1px}
+.sc-comment-form{display:flex;gap:6px;margin-top:8px;align-items:center}
+.sc-comment-form input{flex:1;background:var(--sc-surface2);border:1px solid var(--sc-border);border-radius:6px;padding:6px 10px;font-size:0.83rem;color:var(--sc-text-bright);font-family:inherit;margin-bottom:0}
+.sc-comment-form input:focus{outline:none;border-color:var(--sc-accent)}
+.sc-comment-form input::placeholder{color:var(--sc-text-muted)}
+.sc-comment-form button{background:var(--sc-accent);border:none;color:#06101c;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:0.83rem;font-weight:700}
+.sc-comment-form button:hover{background:var(--sc-accent-hover)}
+.sc-comment-media img,.sc-comment-media video{max-width:180px;max-height:120px;border-radius:6px;display:block;margin-top:4px}
+
+.sc-groups-sidebar{width:260px;background:rgba(5,7,18,0.55);backdrop-filter:blur(10px);display:flex;flex-direction:column;border-right:1px solid var(--sc-border);flex-shrink:0;overflow:hidden}
+.sc-groups-actions{padding:8px 12px;display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+.sc-groups-actions input{background:rgba(5,7,18,0.7);border:1px solid var(--sc-border);color:var(--sc-text-bright);border-radius:6px;padding:7px 10px;font-size:0.83rem;font-family:inherit;width:100%;margin-bottom:0}
+.sc-groups-actions input:focus{outline:none;border-color:var(--sc-accent)}
+.sc-groups-btns{display:flex;gap:6px}
+.sc-groups-list{flex:1;overflow-y:auto;padding:4px 0;min-height:0}
+.sc-group-item{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;transition:background 0.1s;border-radius:8px;margin:2px 8px}
+.sc-group-item:hover{background:var(--sc-surface2)}
+.sc-group-item.active{background:rgba(0,229,255,0.1);box-shadow:0 0 14px rgba(0,229,255,0.15) inset}
+.sc-group-icon{width:36px;height:36px;background:linear-gradient(135deg, var(--sc-accent), #7c4dff);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:#06101c;flex-shrink:0;transition:border-radius 0.15s;box-shadow:0 0 12px rgba(0,229,255,0.3)}
+.sc-group-item:hover .sc-group-icon{border-radius:10px}
+.sc-group-info{flex:1;min-width:0}
+.sc-group-name{font-weight:600;font-size:0.88rem;color:var(--sc-text-bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-group-meta{font-size:0.73rem;color:var(--sc-text-muted)}
+.sc-group-type-badge{font-size:0.65rem;padding:1px 5px;border-radius:4px;font-weight:700}
+.sc-group-type-badge.public{background:rgba(57,255,176,0.15);color:var(--sc-green)}
+.sc-group-type-badge.private{background:rgba(255,77,109,0.15);color:var(--sc-red)}
+
+.sc-group-chat{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.sc-group-chat-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--sc-text-muted);gap:8px}
+.sc-group-chat-empty .sc-empty-icon{font-size:4rem;filter:drop-shadow(0 0 16px rgba(0,229,255,0.3))}
+.sc-group-chat-empty h3{color:var(--sc-text-bright);font-size:1.1rem}
+.sc-gc-header{background:rgba(5,7,18,0.55);backdrop-filter:blur(10px);border-bottom:1px solid var(--sc-border);padding:0 16px;height:48px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.sc-gc-header h3{font-size:1rem;font-weight:700;color:var(--sc-text-bright)}
+.sc-members-btn{background:var(--sc-surface);border:1px solid var(--sc-border);color:var(--sc-text-muted);border-radius:6px;padding:5px 10px;font-size:0.8rem;cursor:pointer;transition:all 0.15s;font-family:inherit}
+.sc-members-btn:hover{background:var(--sc-accent);color:#06101c;border-color:var(--sc-accent)}
+
+.sc-gc-messages{flex:1;overflow-y:auto;padding:12px 0;min-height:0}
+
+.sc-new-btn{margin-left:8px;background:linear-gradient(135deg, var(--sc-accent), #7c4dff);color:#06101c;border:none;padding:6px 10px;border-radius:18px;font-size:0.82rem;cursor:pointer;font-weight:700;box-shadow:0 0 12px rgba(0,229,255,0.3)}
+.sc-new-btn.hidden{display:none}
+.sc-gc-msg{display:flex;gap:12px;padding:6px 16px;transition:background 0.1s;position:relative}
+.sc-gc-msg:hover{background:rgba(0,229,255,0.04)}
+.sc-gc-msg .sc-msg-media{margin-top:6px}
+.sc-gc-msg .sc-msg-media img,.sc-gc-msg .sc-msg-media video{max-width:300px;max-height:200px;border-radius:8px;display:block;border:1px solid var(--sc-border)}
+
+.sc-lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.94);z-index:999;align-items:center;justify-content:center;cursor:pointer}
+.sc-lightbox.open{display:flex;animation:fadeIn 0.2s ease}
+.sc-lightbox img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:8px;box-shadow:0 0 60px rgba(0,229,255,0.25)}
+
+.sc-ai-content{flex:1;overflow-y:auto;padding:20px;min-height:0}
+.sc-ai-form-card{background:var(--sc-surface);border:1px solid var(--sc-border);border-radius:10px;padding:20px;margin-bottom:16px;display:flex;flex-direction:column;gap:10px}
+.sc-ai-form-card h3{color:var(--sc-text-bright);font-size:1rem;font-weight:700}
+.sc-ai-form-card p{color:var(--sc-text-muted);font-size:0.83rem}
+.sc-ai-form-card input{background:rgba(5,7,18,0.7);border:1px solid var(--sc-border);color:var(--sc-text-bright);border-radius:6px;padding:8px 12px;font-size:0.9rem;font-family:inherit;width:100%;margin-bottom:0}
+.sc-ai-form-card input:focus{outline:none;border-color:var(--sc-accent)}
+.sc-ai-results{display:flex;flex-direction:column;gap:12px}
+.sc-tasks-card{background:var(--sc-surface);border:1px solid var(--sc-border);border-radius:10px;padding:16px}
+.sc-tasks-card h3{color:var(--sc-text-bright);font-weight:700;margin-bottom:12px}
+.sc-task-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--sc-border);cursor:pointer}
+.sc-task-item:last-child{border-bottom:none}
+.sc-task-item input[type=checkbox]{margin-top:2px;accent-color:var(--sc-accent);width:16px;height:16px;flex-shrink:0}
+.sc-task-item span{color:var(--sc-text);font-size:0.88rem;line-height:1.4}
+.sc-task-item input:checked+span{text-decoration:line-through;color:var(--sc-text-muted)}
+.sc-btn-accent{background:linear-gradient(120deg, var(--sc-accent), #7c4dff);color:#06101c;border:none;border-radius:8px;padding:9px 16px;font-size:0.87rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit;box-shadow:0 0 14px rgba(0,229,255,0.3)}
+.sc-btn-accent:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(0,229,255,0.5)}
+.sc-btn-accent:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.sc-btn-secondary{background:var(--sc-surface2);color:var(--sc-text);border:1px solid var(--sc-border);border-radius:8px;padding:9px 16px;font-size:0.87rem;font-weight:600;cursor:pointer;transition:background 0.15s;font-family:inherit}
+.sc-btn-secondary:hover{background:var(--sc-surface)}
+.sc-request-badge{background:rgba(0,229,255,.14);color:var(--sc-accent);padding:3px 8px;border-radius:999px;font-size:0.72rem;font-weight:700;margin-left:6px}
+.sc-requests-box{max-width:520px;width:100%;}
+.sc-modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sc-modal-close-btn{background:none;border:none;color:var(--sc-text);font-size:1.2rem;cursor:pointer;line-height:1}
+.sc-requests-list{display:grid;gap:10px;max-height:320px;overflow-y:auto;padding-right:4px}
+.sc-request-item{background:var(--sc-surface2);border:1px solid var(--sc-border);border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sc-request-meta{display:flex;flex-direction:column;gap:4px}
+.sc-request-username{font-weight:700;color:var(--sc-text-bright)}
+.sc-request-time{font-size:0.8rem;color:var(--sc-text-muted)}
+.sc-request-actions{display:flex;gap:8px;align-items:center}
+.sc-request-actions button{padding:7px 12px;font-size:0.82rem;border-radius:8px;cursor:pointer;border:1px solid transparent;transition:transform 0.15s}
+.sc-request-actions button:hover{transform:scale(1.04)}
+.sc-request-approve{background:var(--sc-green);color:#06101c;border-color:var(--sc-green);font-weight:700}
+.sc-request-reject{background:var(--sc-red);color:white;border-color:var(--sc-red);font-weight:700}
+.sc-request-empty{padding:24px 16px;text-align:center;color:var(--sc-text-muted);border-radius:12px;background:var(--sc-surface2)}
+.sc-request-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:rgba(10,14,30,.96);border:1px solid var(--sc-border);color:white;padding:12px 18px;border-radius:999px;box-shadow:0 18px 50px rgba(0,229,255,.18);font-size:0.9rem;z-index:9999;opacity:0;transition:opacity 0.2s}
+.sc-request-toast.visible{opacity:1}
+.sc-groups-section-label{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;color:var(--sc-text-muted);padding:8px 14px 4px;text-transform:uppercase}
+.sc-empty-state{padding:2rem;text-align:center;color:var(--sc-text-muted)}
+.sc-empty-state .sc-empty-icon{font-size:2.5rem;margin-bottom:0.6rem;filter:drop-shadow(0 0 14px rgba(0,229,255,0.3))}
+.sc-empty-state p{font-weight:600;color:var(--sc-text-bright);margin-bottom:0.3rem}
+
+.sc-doc-preview{display:inline-flex;align-items:center;gap:6px;background:var(--sc-surface);border:1px solid var(--sc-border);border-radius:6px;padding:6px 10px;color:var(--sc-text-bright);font-size:0.82rem;font-weight:500;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-doc-link{display:inline-flex;align-items:center;gap:5px;background:var(--sc-surface);border:1px solid var(--sc-border);border-radius:6px;padding:7px 12px;color:var(--sc-accent);font-size:0.82rem;font-weight:600;text-decoration:none;transition:background 0.15s}
+.sc-doc-link:hover{background:var(--sc-surface2);text-decoration:underline}
+
+/* Scrollbars */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-thumb{background:rgba(0,229,255,0.35);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(0,229,255,0.6)}
+.sc-message-list::-webkit-scrollbar,.sc-gc-messages::-webkit-scrollbar,.sc-groups-list::-webkit-scrollbar,.sc-ai-content::-webkit-scrollbar{width:4px}
+.sc-message-list::-webkit-scrollbar-thumb,.sc-gc-messages::-webkit-scrollbar-thumb,.sc-groups-list::-webkit-scrollbar-thumb,.sc-ai-content::-webkit-scrollbar-thumb{background:rgba(0,229,255,0.3);border-radius:2px}
+
+@media(max-width:768px){
+  .container{flex-direction:column;height:auto}
+  .sidebar{width:100%;min-width:auto;height:auto;max-height:55vh}
+  .main{height:calc(100vh - 76px)}
+  .predictor-grid{grid-template-columns:1fr}
+  header h1{font-size:1.15rem}
+  .sc-groups-sidebar{width:200px}
+}
+@media(max-width:480px){
+  header{padding:12px 16px}
+  .header-community-btn span{display:none}
+  .sidebar{padding:14px}
+}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🎓</div>
+  <div>
+    <h1>JEE 2026 College Advisor</h1>
+    <p>AI-powered institute &amp; branch recommendations</p>
+  </div>
+  <button class="header-community-btn" onclick="switchTab('community')">💬 StudyCord</button>
+</header>
+
+<div class="container">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="form-section">
+      <h3>📊 Your JEE Profile</h3>
+      <label>JEE Mains Rank (CRL) <span style="color:var(--muted);font-weight:400">→ NITs, IIITs, Others</span></label>
+      <input type="number" id="mains-rank" placeholder="e.g. 15000" min="1"/>
+      <label>JEE Advanced Rank <span style="color:var(--muted);font-weight:400">→ IITs only</span></label>
+      <input type="number" id="adv-rank" placeholder="e.g. 2500" min="1"/>
+      <div class="rank-hint">💡 Give both ranks to see IITs + NITs/IIITs together</div>
+      <label>Gender</label>
+      <select id="gender">
+        <option value="male">Male</option>
+        <option value="female">Female (incl. supernumerary seats)</option>
+      </select>
+      <label>Category / Caste <span class="category-badge" id="category-badge-tag" style="display:none">est.</span></label>
+      <select id="category-select" onchange="onCategoryChange()">
+        <option value="OPEN">General / Open</option>
+        <option value="GEN-EWS">EWS (Economically Weaker Section)</option>
+        <option value="OBC-NCL">OBC-NCL</option>
+        <option value="SC">SC</option>
+        <option value="ST">ST</option>
+      </select>
+      <div class="category-note" id="category-note"></div>
+      <button type="button" class="btn-link" onclick="showCategoryInfo()">ℹ️ How does my category affect cutoffs?</button>
+      <label>Home State</label>
+      <select id="home-state"><option value="">Select your state</option></select>
+      <label style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer">
+        <input type="checkbox" id="nearest-only" style="margin:0"/>
+        <span>Nearest state colleges only</span>
+      </label>
+      <div class="rank-hint">When on, only colleges in your home state or neighbouring states are shown.</div>
+    </div>
+
+    <div class="form-section">
+      <h3>🎯 Interests &amp; Goals</h3>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <label style="margin-bottom:0">Department Preferences</label>
+        <span id="dept-count-badge" style="font-size:0.7rem;background:#eff6ff;color:var(--primary);border:1px solid #bfdbfe;padding:2px 8px;border-radius:12px;font-weight:700;display:none">0 selected</span>
+      </div>
+      <select id="interest-select" multiple onchange="updateDeptBadge()">
+        <option value="coding">💻 Software / CS / AI / Data Science</option>
+        <option value="electronics">📡 Electronics / Electrical / VLSI</option>
+        <option value="research">🔬 Research / Pure Science / Math</option>
+        <option value="mba">📈 MBA / Management / Industrial Engg</option>
+        <option value="core_engg">⚙️ Core Engineering (Mech/Civil/Chem…)</option>
+        <option value="earth_science">🌍 Earth Science / Geology / Geophysics</option>
+        <option value="science">🧪 Pure Science / Biology / Physics</option>
+        <option value="architecture_design">🏛️ Architecture / Planning / Design</option>
+        <option value="undecided">🤷 Undecided / Explore All</option>
+      </select>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:-6px;margin-bottom:10px">
+        <p style="font-size:0.7rem;color:var(--muted)">Click • <strong>Ctrl+Click</strong> for multiple</p>
+        <button type="button" onclick="clearDeptSelection()" style="font-size:0.7rem;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0">Clear</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="find-btn" onclick="findOptions()">🔍 Find My Options</button>
+    <div id="form-error" style="color:var(--danger);font-size:0.8rem;margin-top:8px;display:none"></div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('results')">📋 Results</div>
+      <div class="tab" onclick="switchTab('predictor')">🎯 Rank Predictor</div>
+      <div class="tab" onclick="switchTab('chat')">💬 AI Advisor</div>
+      <div class="tab" onclick="switchTab('community')">👥 Community</div>
+    </div>
+
+    <!-- Results Tab -->
+    <div class="tab-panel active" id="tab-results">
+      <div id="results-header" style="display:none">
+        <div id="rank-info-banner" class="rank-info-banner"></div>
+        <div id="category-result-note" class="pr-warning-box" style="display:none;margin-bottom:14px"></div>
+        <div class="results-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--safe-zone)"></div>Safe (rank &lt; opening — guaranteed zone)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Good (60–85% chance)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Moderate (35–60%)</div>
+        </div>
+        <div class="filter-bar">
+          <input type="text" id="search-filter" placeholder="🔍 Filter by college or branch…" oninput="applyFilters()"/>
+          <select id="type-filter" onchange="applyFilters()">
+            <option value="">All Types</option>
+            <option value="IIT">IITs</option>
+            <option value="NIT">NITs</option>
+            <option value="IIIT">IIITs</option>
+            <option value="Other">Others</option>
+          </select>
+          <select id="chance-filter" onchange="applyFilters()">
+            <option value="">All Chances</option>
+            <option value="Safe">✅ Safe (≥85%)</option>
+            <option value="Good">👍 Good (60–85%)</option>
+            <option value="Moderate">⚠️ Moderate (35–60%)</option>
+          </select>
+          <select id="quota-filter" onchange="applyFilters()"><option value="">All Quotas</option></select>
+          <select id="sort-filter" onchange="applyFilters()">
+            <option value="recommended">Recommended</option>
+            <option value="prob-desc">Highest Probability</option>
+            <option value="closing-asc">Closing Rank ↑</option>
+            <option value="closing-desc">Closing Rank ↓</option>
+            <option value="opening-asc">Opening Rank ↑</option>
+            <option value="institute-asc">Institute A→Z</option>
+          </select>
+        </div>
+        <div id="result-count"></div>
+      </div>
+      <div id="results-container">
+        <div class="empty-state">
+          <div class="icon">🎯</div>
+          <p>Enter your JEE rank and details, then click <strong>Find My Options</strong>.</p>
+          <p style="margin-top:8px;font-size:0.8rem;color:var(--muted)">
+            🏆 JEE Advanced rank → IITs &nbsp;|&nbsp; 📊 JEE Mains rank → NITs, IIITs, Others<br/>
+            ✅ Only colleges where your rank ≤ closing rank are shown
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rank Predictor Tab (NEW) -->
+    <div class="tab-panel" id="tab-predictor">
+      <div class="predictor-grid">
+        <div class="predictor-card">
+          <h3>🎯 Advanced Rank Predictor</h3>
+          <div class="tabs-mini">
+            <div class="tab-mini active" data-mode="mains-pct" onclick="setPredictorMode('mains-pct')">Mains %ile</div>
+            <div class="tab-mini" data-mode="mains-marks" onclick="setPredictorMode('mains-marks')">Mains Marks</div>
+            <div class="tab-mini" data-mode="mains-rank" onclick="setPredictorMode('mains-rank')">Mains Rank</div>
+          </div>
+          <div class="predictor-input-group active" data-mode="mains-pct">
+            <label>JEE Mains Percentile</label>
+            <input type="number" id="pred-mains-pct" placeholder="e.g. 97.5" step="0.01" min="0" max="100"/>
+          </div>
+          <div class="predictor-input-group" data-mode="mains-marks">
+            <label>JEE Mains Marks (out of 300)</label>
+            <input type="number" id="pred-mains-marks" placeholder="e.g. 180" min="0" max="300"/>
+          </div>
+          <div class="predictor-input-group" data-mode="mains-rank">
+            <label>JEE Mains CRL Rank</label>
+            <input type="number" id="pred-mains-rank" placeholder="e.g. 15000" min="1"/>
+          </div>
+
+          <h4>JEE Advanced (optional, for IITs)</h4>
+          <label>JEE Advanced Marks (out of 360)</label>
+          <input type="number" id="pred-adv-marks" placeholder="e.g. 180" min="0" max="360"/>
+          <label>OR JEE Advanced Rank (if known)</label>
+          <input type="number" id="pred-adv-rank" placeholder="e.g. 2500" min="1"/>
+
+          <h4>Context</h4>
+          <label>Category / Caste</label>
+          <select id="pred-category">
+            <option value="OPEN">General / Open</option>
+            <option value="GEN-EWS">EWS</option>
+            <option value="OBC-NCL">OBC-NCL</option>
+            <option value="SC">SC</option>
+            <option value="ST">ST</option>
+          </select>
+          <label>Gender</label>
+          <select id="pred-gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+          <label>Home State</label>
+          <select id="pred-home-state"><option value="">Select your state</option></select>
+
+          <button class="btn btn-primary" id="predict-btn" onclick="runRankPredictor()" style="margin-top:14px">🔮 Predict My Rank &amp; Chances</button>
+        </div>
+
+        <div class="predictor-card">
+          <h3>📈 Prediction Results</h3>
+          <div id="predictor-results">
+            <div class="empty-state">
+              <div class="icon">🔮</div>
+              <p>Enter your score on the left and click <strong>Predict</strong>.</p>
+              <p style="margin-top:8px;font-size:0.8rem;color:var(--muted)">Converts marks/percentile/rank, shows category-adjusted estimates, and gives branch-wise admission chances.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Tab -->
+    <div class="tab-panel" id="tab-chat">
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-welcome">
+          <div class="icon">🤖</div>
+          <p><strong>Hi! I'm your JEE AI Advisor.</strong><br>Fill your profile and ask me anything about colleges, branches, or career paths.</p>
+          <div class="quick-questions">
+            <div class="quick-q" onclick="sendQuick('Which NIT is best for CSE?')">Best NIT for CSE?</div>
+            <div class="quick-q" onclick="sendQuick('What is HS vs OS quota for NITs?')">HS vs OS quota?</div>
+            <div class="quick-q" onclick="sendQuick('IIT Dhanbad vs NIT Trichy ECE?')">IIT Dhanbad vs NIT Trichy?</div>
+            <div class="quick-q" onclick="sendQuick('Placement stats IIT Bombay CSE?')">IIT Bombay placements?</div>
+            <div class="quick-q" onclick="sendQuick('Best branch for MBA later?')">Best branch for MBA?</div>
+            <div class="quick-q" onclick="sendQuick('Which IITs can I target with rank 3000?')">IITs for rank 3000?</div>
+            <div class="quick-q" onclick="sendQuick('How does OBC-NCL reservation affect my NIT chances?')">OBC-NCL reservation?</div>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <textarea class="chat-input" id="chat-input" placeholder="Ask about colleges, branches, placements, career paths…" rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="chat-send" id="chat-send-btn" onclick="sendChat()">Send</button>
+      </div>
+    </div>
+
+    <!-- Community Tab -->
+    <div class="tab-panel" id="tab-community">
+
+      <!-- Username Modal -->
+      <div id="sc-username-modal" class="sc-modal-overlay visible">
+        <div class="sc-modal-box">
+          <div class="sc-modal-logo">📚</div>
+          <h2>Welcome to StudyCord</h2>
+          <p>Choose a display name to get started</p>
+          <input type="text" id="sc-username-input" placeholder="Your nickname…" maxlength="20" autocomplete="off"/>
+          <input type="text" id="sc-secret-code-input" placeholder="Secret group code (optional)" maxlength="6" autocomplete="off" style="text-transform:uppercase;text-align:center;font-size:1rem;letter-spacing:0.2rem;margin-top:12px"/>
+          <button class="sc-btn-accent" onclick="scSetUsername()">Enter Community</button>
+        </div>
+      </div>
+
+      <!-- Create Group Modal -->
+      <div id="sc-create-group-modal" class="sc-modal-overlay">
+        <div class="sc-modal-box">
+          <h2>Create Study Group</h2>
+          <input type="text" id="sc-cg-name" placeholder="Group name" maxlength="40" autocomplete="off"/>
+          <input type="text" id="sc-cg-subject" placeholder="Subject (e.g. Organic Chemistry)" maxlength="40" autocomplete="off"/>
+          <select id="sc-cg-type">
+            <option value="public">🌐 Public — visible in search</option>
+            <option value="private">🔒 Private — invite code only</option>
+          </select>
+          <select id="sc-cg-expiry">
+            <option value="3">Expires in 3 months</option>
+            <option value="6">Expires in 6 months</option>
+          </select>
+          <button class="sc-btn-accent" onclick="scCreateGroup()">Create Group</button>
+          <button class="sc-btn-secondary" onclick="scCloseModals()">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Join Group Modal -->
+      <div id="sc-join-group-modal" class="sc-modal-overlay">
+        <div class="sc-modal-box">
+          <h2>Join a Group</h2>
+          <p>Enter the 6-character secret code</p>
+          <input type="text" id="sc-join-code" placeholder="ABC123" maxlength="6" autocomplete="off" style="text-transform:uppercase;text-align:center;font-size:1.5rem;letter-spacing:0.3rem"/>
+          <div id="sc-join-error" style="margin:10px 0;color:#dc2626;font-size:0.9rem;min-height:22px"></div>
+          <button class="sc-btn-accent" onclick="scJoinGroup()">Join</button>
+          <button class="sc-btn-secondary" onclick="scCloseModals()">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Join Requests Modal -->
+      <div id="sc-requests-modal" class="sc-modal-overlay">
+        <div class="sc-modal-box sc-requests-box">
+          <div class="sc-modal-header">
+            <h2>Pending Join Requests</h2>
+            <button class="sc-modal-close-btn" onclick="scCloseRequestsModal()">✕</button>
+          </div>
+          <div id="sc-requests-list" class="sc-requests-list"></div>
+          <div class="sc-modal-actions">
+            <button class="sc-btn-secondary" onclick="scCloseRequestsModal()">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Code Reveal Modal -->
+      <div id="sc-code-reveal-modal" class="sc-modal-overlay">
+        <div class="sc-modal-box">
+          <h2>Group Created! 🎉</h2>
+          <p>Share this code with your friends:</p>
+          <div class="sc-code-display" id="sc-reveal-code" onclick="scCopyCode()"></div>
+          <p class="sc-code-hint">Tap to copy • They join via "Join" button with this code</p>
+          <button class="sc-btn-accent" onclick="scCopyCode()">📋 Copy Code</button>
+          <button class="sc-btn-secondary" onclick="scCloseModals()">Done</button>
+        </div>
+      </div>
+
+      <!-- Lightbox -->
+      <div id="sc-lightbox" class="sc-lightbox" onclick="document.getElementById('sc-lightbox').classList.remove('open')">
+        <img id="sc-lightbox-img" src="" alt=""/>
+      </div>
+
+      <!-- SC App -->
+      <div class="sc-app" id="sc-app">
+        <nav class="sc-sidebar">
+          <div class="sc-sidebar-logo" title="StudyCord"><span>SC</span></div>
+          <div class="sc-sidebar-divider"></div>
+          <button class="sc-nav-btn active" data-sc-tab="feed" onclick="scSwitchTab('feed')" title="Feed">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          </button>
+          <button class="sc-nav-btn" data-sc-tab="groups" onclick="scSwitchTab('groups')" title="Groups">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          </button>
+          <button class="sc-nav-btn" data-sc-tab="ai" onclick="scSwitchTab('ai')" title="AI Tasks">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M21 10.12h-6.78l2.74-2.82c-2.73-2.7-7.15-2.8-9.88-.1-2.73 2.71-2.73 7.08 0 9.79s7.15 2.71 9.88 0C18.32 15.65 19 14.08 19 12.1h2c0 1.98-.88 4.55-2.64 6.29-3.51 3.48-9.21 3.48-12.72 0-3.5-3.47-3.53-9.11-.02-12.58s9.14-3.49 12.65 0L21 3v7.12z"/></svg>
+          </button>
+          <div class="sc-sidebar-spacer"></div>
+          <div class="sc-sidebar-user">
+            <div class="sc-avatar-sm" id="sc-sidebar-avatar"></div>
+          </div>
+        </nav>
+
+        <!-- Feed Panel — flex column, messages scroll, composer pinned -->
+        <main id="sc-feed-panel" class="sc-panel">
+          <div class="sc-panel-header">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#72767d"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+            <h2>Community Feed</h2>
+            <div class="sc-conn-status" id="sc-feed-status" style="margin-left:auto">
+              <span class="sc-live-dot"></span><span id="sc-feed-status-text">Connecting…</span>
+            </div>
+          </div>
+
+          <!-- Scrollable messages area -->
+          <div id="sc-feed-list" class="sc-message-list"></div>
+
+          <!-- Pinned composer — never scrolls -->
+          <div class="sc-composer-wrap">
+            <div class="sc-media-preview" id="sc-feed-media-preview">
+              <button class="sc-media-remove" onclick="scClearFeedMedia()">✕</button>
+              <span id="sc-feed-media-content"></span>
+            </div>
+            <div id="sc-feed-uploading" class="sc-uploading" style="display:none">⏳ Uploading to cloud…</div>
+            <div class="sc-composer">
+              <button class="sc-media-btn" onclick="document.getElementById('sc-feed-file-input').click()" title="Attach image/video">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              </button>
+              <input class="sc-media-upload-input" id="sc-feed-file-input" type="file" accept="image/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="scHandleFeedFile(this)"/>
+              <input type="text" id="sc-post-input" placeholder="Share something with the community…" maxlength="500" autocomplete="off" onkeydown="if(event.key==='Enter')scSubmitPost()"/>
+              <button class="sc-send-btn" id="sc-feed-send-btn" onclick="scSubmitPost()" title="Send">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+              </button>
+            </div>
+          </div>
+        </main>
+
+        <!-- Groups Panel -->
+        <main id="sc-groups-panel" class="sc-panel hidden">
+          <div class="sc-groups-sidebar">
+            <div class="sc-panel-header"><h2>Study Groups</h2></div>
+            <div class="sc-groups-actions">
+              <input type="text" id="sc-group-search" placeholder="Search public groups…" oninput="scSearchGroups()" autocomplete="off"/>
+              <div class="sc-groups-btns">
+                <button class="sc-btn-accent" onclick="scOpenCreateGroup()">+ Create</button>
+                <button class="sc-btn-secondary" onclick="scOpenJoinGroup()">Join</button>
+              </div>
+            </div>
+            <div id="sc-groups-list" class="sc-groups-list"></div>
+          </div>
+          <!-- Group chat — flex column with pinned composer built dynamically -->
+          <div class="sc-group-chat" id="sc-group-chat">
+            <div class="sc-group-chat-empty">
+              <div class="sc-empty-icon">👥</div>
+              <h3>Select a group</h3>
+              <p>Or create / join one via code</p>
+            </div>
+          </div>
+        </main>
+
+        <!-- AI Panel -->
+        <main id="sc-ai-panel" class="sc-panel hidden">
+          <div class="sc-panel-header">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#72767d"><path d="M21 10.12h-6.78l2.74-2.82c-2.73-2.7-7.15-2.8-9.88-.1-2.73 2.71-2.73 7.08 0 9.79s7.15 2.71 9.88 0C18.32 15.65 19 14.08 19 12.1h2c0 1.98-.88 4.55-2.64 6.29-3.51 3.48-9.21 3.48-12.72 0-3.5-3.47-3.53-9.11-.02-12.58s9.14-3.49 12.65 0L21 3v7.12z"/></svg>
+            <h2>AI Study Tasks</h2>
+          </div>
+          <div class="sc-ai-content">
+            <div class="sc-ai-form-card">
+              <h3>🤖 Personalized Study Plan</h3>
+              <p>Enter a topic and AI will build a custom study checklist for you</p>
+              <input type="text" id="sc-ai-subject" placeholder="e.g. Organic Chemistry, Calculus, Mechanics…" autocomplete="off"/>
+              <input type="text" id="sc-ai-context" placeholder="Focus area (optional)…" autocomplete="off"/>
+              <button class="sc-btn-accent" onclick="scGetAiTasks()" id="sc-ai-btn">Generate Tasks</button>
+            </div>
+            <div id="sc-ai-results" class="sc-ai-results"></div>
+          </div>
+        </main>
+      </div>
+    </div><!-- /community -->
+  </div><!-- /.main -->
+</div><!-- /.container -->
+
+<!-- College Detail Modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-title">College Details</div>
+        <div id="modal-location" style="font-size:0.8rem;color:var(--muted);margin-top:4px"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal(null)">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- Category Info Modal (NEW) -->
+<div class="modal-overlay" id="category-modal-overlay" onclick="closeCategoryModal(event)">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="category-modal-title">Category Info</div>
+      </div>
+      <button class="modal-close" onclick="closeCategoryModal(null)">✕</button>
+    </div>
+    <div class="modal-body" id="category-modal-body"></div>
+  </div>
+</div>
+
+<script>
+let allResults=[];
+let chatHistory=[];
+let currentProfile=null;
+
+const DEPT_KEYWORDS={
+  coding:['computer science','computer science and engineering','cse','cs','information technology','it','software engineering','software','data science','data engineering','data science and engineering','artificial intelligence','ai','artificial intelligence and data science','artificial intelligence and machine learning','machine learning','computational engineering','computational and data science','computing','informatics','cyber security','cybersecurity','computer engineering','vlsi','microelectronics'],
+  electronics:['electrical engineering','electrical and electronics engineering','electronics engineering','electronics and communication engineering','electronics and instrumentation engineering','instrumentation engineering','power systems','vlsi design','microelectronics','embedded systems'],
+  research:['engineering physics','engineering science','physics','applied physics','mathematics','mathematics and computing','mathematics & computing','computational mathematics','applied mathematics','statistics','statistics and data science','scientific computing','chemistry','earth sciences','biological science','biosciences','interdisciplinary sciences'],
+  mba:['industrial engineering','industrial engineering and operations research','industrial and systems engineering','production engineering','operations research','management','economics','engineering design'],
+  core_engg:['mechanical engineering','mechatronics','manufacturing','civil engineering','chemical engineering','metallurgical engineering','materials engineering','materials science','mining engineering','petroleum engineering','aerospace engineering','ocean engineering','naval architecture','agricultural engineering','environmental engineering','energy engineering','biotechnology','bioengineering','biomedical engineering','design','industrial design','architecture','planning'],
+  earth_science:['applied geology','applied geophysics','exploration geophysics','earth sciences','geological technology','geophysical technology','geology','geophysics'],
+  science:['biology','biological science','physics','chemistry','mathematics','economics','statistics','physical science','chemical science','interdisciplinary sciences'],
+  architecture_design:['architecture','planning','design','industrial design','engineering design','bachelor of architecture','bachelor of planning'],
+  undecided:[]
+};
+
+function _kwMatches(kw,text){const e=kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return new RegExp('(?<![a-z0-9])'+e+'(?![a-z0-9])').test(text)}
+function updateDeptBadge(){const s=document.getElementById('interest-select'),b=document.getElementById('dept-count-badge');if(!s||!b)return;const n=s.selectedOptions.length;b.textContent=n===1?'1 selected':`${n} selected`;b.style.display=n>0?'inline-block':'none'}
+function clearDeptSelection(){const s=document.getElementById('interest-select');if(s)Array.from(s.options).forEach(o=>o.selected=false);updateDeptBadge()}
+
+/* ── Category / Caste helpers (NEW) ── */
+let datasetCategoryInfo=null;
+
+(async()=>{
+  try{
+    const r=await fetch('/api/filters'),d=await r.json();
+    fillSelect('home-state',d.states||[],'Select your state');
+    fillSelect('pred-home-state',d.states||[],'Select your state');
+    fillSelect('quota-filter',d.quotas||[],'All Quotas');
+    datasetCategoryInfo=d;
+    onCategoryChange();
+  }catch(e){}
+})();
+
+function fillSelect(id,values,placeholder=''){
+  const sel=document.getElementById(id);if(!sel)return;
+  sel.innerHTML='';
+  if(placeholder){const o=document.createElement('option');o.value='';o.textContent=placeholder;sel.appendChild(o)}
+  values.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o)})
+}
+
+async function onCategoryChange(){
+  const cat=document.getElementById('category-select').value;
+  const noteEl=document.getElementById('category-note');
+  const badgeEl=document.getElementById('category-badge-tag');
+  if(cat==='OPEN'){noteEl.classList.remove('show');noteEl.textContent='';badgeEl.style.display='none';return}
+  try{
+    const r=await fetch('/api/category-info?category='+encodeURIComponent(cat));
+    const d=await r.json();
+    if(d.dataset_note){
+      noteEl.textContent=`⚠️ ${d.dataset_note}`;
+      noteEl.classList.add('show');
+      badgeEl.textContent=`~${d.relaxation_factor.toFixed(2)}× est.`;
+      badgeEl.classList.add('estimated');
+      badgeEl.style.display='inline-block';
+    }else{
+      noteEl.classList.remove('show');
+      badgeEl.classList.remove('estimated');
+      badgeEl.style.display='none';
+    }
+  }catch(e){noteEl.classList.remove('show')}
+}
+
+async function showCategoryInfo(){
+  const cat=document.getElementById('category-select').value;
+  document.getElementById('category-modal-overlay').classList.add('open');
+  document.getElementById('category-modal-title').textContent='Category Info';
+  document.getElementById('category-modal-body').innerHTML='<div style="text-align:center;padding:24px;color:var(--muted)">⏳ Loading…</div>';
+  try{
+    const r=await fetch('/api/category-info?category='+encodeURIComponent(cat));
+    const d=await r.json();
+    document.getElementById('category-modal-title').textContent=d.display_name;
+    let html=`
+      <div class="info-row"><strong>Eligibility:</strong>&nbsp;${escapeHtml(d.eligibility)}</div>
+      <div class="info-row"><strong>Seat Reservation:</strong>&nbsp;${escapeHtml(d.seat_reservation)}</div>
+      <div class="info-row"><strong>Rank Advantage:</strong>&nbsp;${escapeHtml(d.rank_advantage)}</div>
+      <div class="info-row"><strong>JEE Note:</strong>&nbsp;${escapeHtml(d.jee_note)}</div>
+      <div class="info-row"><strong>Quota Note:</strong>&nbsp;${escapeHtml(d.quota_note)}</div>`;
+    if(d.dataset_note){
+      html+=`<div class="pr-warning-box" style="margin-top:14px">⚠️ ${escapeHtml(d.dataset_note)}</div>`;
+    }
+    html+=`<div class="section-title">All Categories — Relaxation vs OPEN</div>
+      <table class="programs-table"><thead><tr><th>Category</th><th>Relaxation Factor</th></tr></thead><tbody>
+      ${(d.all_categories||[]).map(c=>`<tr><td>${escapeHtml(c.name)}</td><td>${c.relax.toFixed(2)}×</td></tr>`).join('')}
+      </tbody></table>`;
+    document.getElementById('category-modal-body').innerHTML=html;
+  }catch(e){document.getElementById('category-modal-body').innerHTML='<div style="color:var(--danger);padding:20px">Error loading category info.</div>'}
+}
+function closeCategoryModal(e){if(!e||e.target===document.getElementById('category-modal-overlay'))document.getElementById('category-modal-overlay').classList.remove('open')}
+
+function switchTab(tab){
+  const panels=['results','predictor','chat','community'];
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',panels[i]===tab));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(tab==='community')scInitIfNeeded();
+}
+
+function getProfile(){
+  const sel=document.getElementById('interest-select');
+  const interests=sel?Array.from(sel.selectedOptions).map(o=>o.value):[];
+  const category=document.getElementById('category-select').value||'OPEN';
+  return{
+    jee_mains_rank: parseInt(document.getElementById('mains-rank').value) || null,
+    jee_adv_rank: parseInt(document.getElementById('adv-rank').value) || null,
+    gender: document.getElementById('gender').value,
+    home_state: document.getElementById('home-state').value,
+    nearest_only: document.getElementById('nearest-only').checked,
+    interests,
+    category,
+    seat_type: category,
+  };
+}
+
+async function findOptions(){
+  const btn=document.getElementById('find-btn'),errDiv=document.getElementById('form-error');
+  errDiv.style.display='none';
+  const profile=getProfile();currentProfile=profile;
+  if(!profile.jee_mains_rank&&!profile.jee_adv_rank){errDiv.textContent='Please enter at least one rank.';errDiv.style.display='block';return}
+  if(!profile.home_state){errDiv.textContent='Please select your home state.';errDiv.style.display='block';return}
+  btn.disabled=true;btn.innerHTML='<span class="loading-spinner"></span> Searching…';
+  document.getElementById('results-container').innerHTML='<div class="empty-state"><div class="icon">⏳</div><p>Matching colleges to your profile…</p></div>';
+  document.getElementById('results-header').style.display='none';
+  try{
+    const r=await fetch('/api/get-options',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(profile)});
+    const d=await r.json();
+    allResults=d.options||[];
+    populateQuotaFilter(allResults);
+    renderResults(allResults);
+    showRankBanner(d.rank_info||{},allResults.length);
+    showCategoryResultNote(d.category_note||'');
+    document.getElementById('results-header').style.display='block';
+    switchTab('results');
+  }catch(e){
+    document.getElementById('results-container').innerHTML='<div class="empty-state"><div class="icon">❌</div><p>Error fetching results. Please try again.</p></div>';
+  }finally{btn.disabled=false;btn.innerHTML='🔍 Find My Options'}
+}
+
+function showCategoryResultNote(note){
+  const el=document.getElementById('category-result-note');
+  if(!el)return;
+  if(note){el.textContent='⚠️ '+note;el.style.display='block'}
+  else{el.style.display='none';el.textContent=''}
+}
+
+function showRankBanner(info,total){
+  const el=document.getElementById('rank-info-banner');if(!el)return;
+  let html='';
+  if(info.adv_used&&info.adv_rank)html+=`<div class="banner-row">🏆 <strong>JEE Advanced Rank ${info.adv_rank.toLocaleString()}</strong> — used for IITs</div>`;
+  if(info.mains_used&&info.mains_rank)html+=`<div class="banner-row">📊 <strong>JEE Mains Rank ${info.mains_rank.toLocaleString()}</strong> — used for NITs, IIITs & Others</div>`;
+  html+=`<div class="banner-row" style="color:var(--muted);font-size:0.75rem">Only colleges where your rank ≤ closing rank are shown. ${total} programs found.</div>`;
+  el.innerHTML=html;el.style.display=html?'block':'none';
+}
+
+const INST_META={
+  IIT:{label:'IITs — Indian Institutes of Technology',sub:'JEE Advanced rank used',icon:'🏛️',cls:'iit'},
+  NIT:{label:'NITs — National Institutes of Technology',sub:'JEE Mains rank used',icon:'🏫',cls:'nit'},
+  IIIT:{label:'IIITs — Indian Institutes of Information Technology',sub:'JEE Mains rank used',icon:'💻',cls:'iiit'},
+  Other:{label:'Other GFTIs & Institutions',sub:'JEE Mains rank used',icon:'🎓',cls:'other'},
+};
+
+function renderResults(items){
+  const container=document.getElementById('results-container'),countDiv=document.getElementById('result-count');
+  if(!items.length){container.innerHTML='<div class="empty-state"><div class="icon">😔</div><p>No matching options found.</p></div>';countDiv.textContent='';return}
+  const safeCount=items.filter(i=>i.in_safe_zone).length;
+  countDiv.textContent=`${items.length} programs found — ${safeCount} in safe zone, ${items.length-safeCount} in competitive range`;
+  const byType={IIT:[],NIT:[],IIIT:[],Other:[]};
+  items.forEach(i=>{const t=i.inst_type||'Other';(byType[t]=byType[t]||[]).push(i)});
+  let html='';
+  ['IIT','NIT','IIIT','Other'].forEach(type=>{
+    const group=byType[type];if(!group||!group.length)return;
+    const meta=INST_META[type];
+    const safeInGroup=group.filter(i=>i.in_safe_zone).length;
+    html+=`<div class="inst-group-header ${meta.cls}">${meta.icon} ${meta.label}<div class="inst-group-desc">${meta.sub}</div><span style="margin-left:auto;font-size:0.72rem;opacity:0.8">${group.length} programs${safeInGroup>0?` · ${safeInGroup} safe`:''}</span></div>`;
+    const preferred=group.filter(i=>getEffectivePrefScore(i)>0);
+    const others=group.filter(i=>getEffectivePrefScore(i)===0);
+    if(preferred.length){
+      const prefSafe=preferred.filter(i=>i.in_safe_zone),prefComp=preferred.filter(i=>!i.in_safe_zone);
+      html+=`<div class="zone-header match-zone">⭐ Matches your interests (${preferred.length})</div>`;
+      if(prefSafe.length){html+=`<div class="zone-header safe-zone" style="margin-left:12px">✅ Safe zone</div>`;html+=prefSafe.map(buildCard).join('')}
+      if(prefComp.length){html+=`<div class="zone-header other-zone" style="margin-left:12px">📊 Competitive</div>`;html+=prefComp.map(buildCard).join('')}
+    }
+    if(others.length){
+      if(preferred.length)html+=`<div class="zone-header other-zone">📋 Other programs (${others.length})</div>`;
+      const oSafe=others.filter(i=>i.in_safe_zone),oComp=others.filter(i=>!i.in_safe_zone);
+      if(oSafe.length){html+=`<div class="zone-header safe-zone" style="margin-left:12px">✅ Safe zone</div>`;html+=oSafe.map(buildCard).join('')}
+      if(oComp.length){if(oSafe.length)html+=`<div class="zone-header other-zone" style="margin-left:12px">📊 Competitive</div>`;html+=oComp.map(buildCard).join('')}
+    }
+  });
+  container.innerHTML=html;
+}
+
+function getEffectivePrefScore(item){
+  const bs=Number(item.preference_score||0);if(bs>0)return bs;
+  if(!currentProfile||!currentProfile.interests||currentProfile.interests.includes('undecided'))return bs;
+  const program=String(item.program||'').toLowerCase();let score=0;
+  currentProfile.interests.forEach(interest=>{(DEPT_KEYWORDS[interest]||[]).forEach(kw=>{if(_kwMatches(kw,program))score+=10})});
+  return score;
+}
+
+function getBadgeClass(type){return{IIT:'badge-iit',NIT:'badge-nit',IIIT:'badge-iiit',Other:'badge-other'}[type]||'badge-other'}
+function getChanceBadge(c){return{Safe:'badge-safe',Good:'badge-good',Moderate:'badge-moderate',Reach:'badge-reach'}[c]||'badge-other'}
+
+function buildCard(item){
+  const instType=item.inst_type||'Other';
+  const pref=getEffectivePrefScore(item);
+  const stars=pref>0?'★'.repeat(Math.min(3,Math.ceil(pref/10))):'';
+  const prob=item.chance_probability||0;
+  const probClass=(item.chance||'moderate').toLowerCase();
+  const safeZoneTag=item.in_safe_zone?`<div class="safe-zone-tag">✅ SAFE — your rank (${(item.student_rank_used||0).toLocaleString()}) is below opening (${(item.opening_rank||0).toLocaleString()})</div>`:'';
+  const estTag=item.category_estimated?`<span class="est-tag" title="Estimated from OPEN data using category relaxation factor">≈ est. cutoff</span>`:'';
+  const cardClass=['result-card',item.in_safe_zone?'in-safe-zone':'',pref>0?'preferred':''].filter(Boolean).join(' ');
+  return`<div class="${cardClass}" onclick="showCollegeDetail('${escapeAttr(item.institute)}')">
+    <div class="card-header">
+      <div style="flex:1">
+        <div class="institute">${escapeHtml(item.institute)}</div>
+        <div class="program">${escapeHtml(item.program)}</div>
+        ${stars?`<div class="pref-star">${stars} Matches your interests</div>`:''}
+        ${safeZoneTag}${estTag}
+        <div class="prob-bar-wrap">
+          <div class="prob-bar"><div class="prob-fill ${probClass}" style="width:${Math.round(prob)}%"></div></div>
+          <span class="prob-pct ${probClass}">${prob}% admission chance</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+        <span class="badge ${getBadgeClass(instType)}">${instType}</span>
+        <span class="badge ${getChanceBadge(item.chance)}">${item.chance}</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="stat">Opening: <strong>${(item.opening_rank||0).toLocaleString()}</strong></div>
+      <div class="stat">Closing: <strong>${(item.closing_rank||0).toLocaleString()}</strong></div>
+      <div class="stat">Your Rank: <strong>${(item.student_rank_used||0).toLocaleString()}</strong></div>
+      <div class="stat">Quota: <strong>${item.quota}</strong></div>
+      <span class="rank-source-tag">${item.rank_source||''}</span>
+      ${item.location?`<div style="font-size:0.72rem;color:var(--muted)">📍 ${item.location}</div>`:''}
+    </div>
+  </div>`;
+}
+
+function populateQuotaFilter(items){
+  const order=['AI','HS','OS','GO','JK','LA'];
+  const quotas=Array.from(new Set(items.map(i=>i.quota).filter(Boolean)));
+  quotas.sort((a,b)=>{const ai=order.indexOf(a),bi=order.indexOf(b);return(ai===-1?99:ai)-(bi===-1?99:bi)||a.localeCompare(b)});
+  fillSelect('quota-filter',quotas,'All Quotas');
+}
+
+function applyFilters(){
+  const search=document.getElementById('search-filter').value.toLowerCase();
+  const type=document.getElementById('type-filter').value;
+  const chance=document.getElementById('chance-filter').value;
+  const quota=document.getElementById('quota-filter').value;
+  const sortMode=document.getElementById('sort-filter').value;
+  let filtered=allResults.filter(i=>{
+    const ms=!search||i.institute.toLowerCase().includes(search)||i.program.toLowerCase().includes(search);
+    const mt=!type||i.inst_type===type;
+    const mc=!chance||i.chance===chance;
+    const mq=!quota||i.quota===quota;
+    return ms&&mt&&mc&&mq;
+  });
+  renderResults(sortResults(filtered,sortMode));
+}
+
+const INST_ORDER_MAP={IIT:0,NIT:1,IIIT:2,Other:3};
+function sortResults(items,mode){
+  const s=[...items];
+  if(mode==='prob-desc')s.sort((a,b)=>b.chance_probability-a.chance_probability);
+  else if(mode==='closing-asc')s.sort((a,b)=>a.closing_rank-b.closing_rank);
+  else if(mode==='closing-desc')s.sort((a,b)=>b.closing_rank-a.closing_rank);
+  else if(mode==='opening-asc')s.sort((a,b)=>a.opening_rank-b.opening_rank);
+  else if(mode==='institute-asc')s.sort((a,b)=>a.institute.localeCompare(b.institute)||a.program.localeCompare(b.program));
+  else s.sort((a,b)=>(INST_ORDER_MAP[a.inst_type]||4)-(INST_ORDER_MAP[b.inst_type]||4)||((a.in_safe_zone?0:1)-(b.in_safe_zone?0:1))||(-getEffectivePrefScore(a)+getEffectivePrefScore(b))||(-b.chance_probability+a.chance_probability)||(a.closing_rank-b.closing_rank));
+  return s;
+}
+
+async function showCollegeDetail(name){
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('modal-title').textContent=name;
+  document.getElementById('modal-location').textContent='';
+  document.getElementById('modal-body').innerHTML='<div style="text-align:center;padding:32px;color:var(--muted)">⏳ Loading insights…</div>';
+  try{
+    const r=await fetch('/api/college-detail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({college_name:name})});
+    const d=await r.json();
+    if(d.location)document.getElementById('modal-location').textContent='📍 '+d.location;
+    const instType=d.inst_type||'Other';
+    const websiteHtml=d.website&&d.website!=='nan'&&d.website
+      ?`<a href="${d.website}" target="_blank" rel="noopener">🌐 ${d.website}</a>`
+      :`<span style="color:var(--muted)">Website unavailable — <a href="https://www.google.com/search?q=${encodeURIComponent(name+' official website')}" target="_blank">Search Google</a></span>`;
+    let programsHtml='';
+    if(d.programs&&d.programs.length){
+      const rows=d.programs.slice(0,50).map(p=>`<tr><td>${escapeHtml(p.program)}</td><td>${escapeHtml(p.quota)}</td><td>${escapeHtml(p.gender||'')}</td><td>${p.opening_rank.toLocaleString()}</td><td>${p.closing_rank.toLocaleString()}</td></tr>`).join('');
+      programsHtml=`<div class="section-title">📚 All Programs (2025 Cutoffs)</div><table class="programs-table"><thead><tr><th>Program</th><th>Quota</th><th>Gender</th><th>Opening</th><th>Closing</th></tr></thead><tbody>${rows}</tbody></table>`;
+    }
+    document.getElementById('modal-body').innerHTML=`
+      <div class="info-row"><span class="badge ${getBadgeClass(instType)}">${instType}</span> <strong>${escapeHtml(d.category)}</strong></div>
+      <div class="info-row">${websiteHtml}</div>
+      <div class="section-title">🤖 AI College Insights</div>
+      <div class="insights-box">${escapeHtml(d.insights)}</div>
+      <div class="info-row" style="margin-top:8px">
+        <button onclick="askAboutCollege('${escapeAttr(name)}')" style="padding:7px 14px;background:var(--primary);color:white;border:none;border-radius:7px;cursor:pointer;font-size:0.82rem;font-weight:600">💬 Ask AI about this college</button>
+      </div>${programsHtml}`;
+  }catch(e){document.getElementById('modal-body').innerHTML='<div style="color:var(--danger);padding:20px">Error loading details.</div>'}
+}
+
+let chatCollegeName = null;
+function askAboutCollege(name){closeModal(null);chatCollegeName=name;switchTab('chat');document.getElementById('chat-input').value=`Tell me about ${name} — placements, culture, best branches, should I go here?`;document.getElementById('chat-input').focus()}
+function closeModal(e){if(!e||e.target===document.getElementById('modal-overlay'))document.getElementById('modal-overlay').classList.remove('open')}
+function handleChatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat()}}
+function autoResize(el){el.style.height='44px';el.style.height=Math.min(el.scrollHeight,120)+'px'}
+
+async function sendChat(){
+  const input=document.getElementById('chat-input'),msg=input.value.trim();if(!msg)return;
+  const btn=document.getElementById('chat-send-btn');input.value='';input.style.height='44px';btn.disabled=true;
+  appendMessage('user',msg);chatHistory.push({role:'user',content:msg});
+  const loadingEl=appendMessage('assistant','● Thinking…',true);
+  try{
+    const payload={message:msg,history:chatHistory,student_profile:currentProfile};
+    if(chatCollegeName){
+      payload.college_name=chatCollegeName;
+      payload.use_perplexity=true;
+    }
+    if(allResults&&allResults.length){
+      payload.use_perplexity=true;
+      payload.college_list=allResults.map(i=>({
+        institute:i.institute,
+        program:i.program,
+        quota:i.quota,
+        seat_type:i.seat_type,
+        gender:i.gender,
+        opening_rank:i.opening_rank,
+        closing_rank:i.closing_rank,
+        student_rank_used:i.student_rank_used,
+        rank_source:i.rank_source,
+        chance:i.chance,
+        chance_probability:i.chance_probability,
+        preference_score:i.preference_score,
+        in_safe_zone:i.in_safe_zone,
+        category_estimated:i.category_estimated,
+        college_state:i.college_state,
+        state_priority:i.state_priority,
+        website:i.website,
+        location:i.location,
+        inst_type:i.inst_type,
+        college_category:i.college_category,
+      }));
+    }
+    payload.profile_details={
+      mains_rank:currentProfile?.jee_mains_rank||null,
+      adv_rank:currentProfile?.jee_adv_rank||null,
+      home_state:currentProfile?.home_state||'',
+      gender:currentProfile?.gender||'',
+      category:currentProfile?.category||'',
+      seat_type:currentProfile?.seat_type||'',
+      interests:currentProfile?.interests||[],
+      nearest_only:currentProfile?.nearest_only||false,
+    };
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const d=await r.json();loadingEl.remove();appendMessage('assistant',d.reply);chatHistory.push({role:'assistant',content:d.reply});
+  }catch(e){loadingEl.textContent='❌ Error. Try again.';loadingEl.classList.remove('loading')}
+  finally{btn.disabled=false}
+}
+
+function sendQuick(text){document.getElementById('chat-input').value=text;sendChat()}
+
+async function loadChatHistory(){
+  // No persistent chat history is loaded or stored for privacy.
+  chatHistory = [];
+}
+
+function appendMessage(role,text,loading=false){
+  const c=document.getElementById('chat-messages');c.querySelector('.chat-welcome')?.remove();
+  const el=document.createElement('div');el.className=`chat-msg ${role}${loading?' loading':''}`;el.textContent=text;c.appendChild(el);c.scrollTop=c.scrollHeight;return el;
+}
+function escapeHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function escapeAttr(s){return String(s||'').replace(/'/g,"\\'")}
+
+/* ═══════════════════════════════════════════
+   RANK PREDICTOR JS (NEW)
+═══════════════════════════════════════════ */
+let predictorMode='mains-pct';
+function setPredictorMode(mode){
+  predictorMode=mode;
+  document.querySelectorAll('.tab-mini').forEach(t=>t.classList.toggle('active',t.dataset.mode===mode));
+  document.querySelectorAll('.predictor-input-group').forEach(g=>g.classList.toggle('active',g.dataset.mode===mode));
+}
+
+async function runRankPredictor(){
+  const btn=document.getElementById('predict-btn');
+  const resultsEl=document.getElementById('predictor-results');
+  const payload={
+    gender: document.getElementById('pred-gender').value,
+    home_state: document.getElementById('pred-home-state').value,
+    category: document.getElementById('pred-category').value,
+    interests: currentProfile&&currentProfile.interests?currentProfile.interests:[],
+  };
+  if(predictorMode==='mains-pct'){
+    const v=parseFloat(document.getElementById('pred-mains-pct').value);
+    if(!isNaN(v))payload.mains_percentile=v;
+  }else if(predictorMode==='mains-marks'){
+    const v=parseFloat(document.getElementById('pred-mains-marks').value);
+    if(!isNaN(v))payload.mains_marks=v;
+  }else if(predictorMode==='mains-rank'){
+    const v=parseInt(document.getElementById('pred-mains-rank').value);
+    if(!isNaN(v))payload.mains_rank=v;
+  }
+  const advMarks=parseFloat(document.getElementById('pred-adv-marks').value);
+  const advRank=parseInt(document.getElementById('pred-adv-rank').value);
+  if(!isNaN(advMarks))payload.adv_marks=advMarks;
+  if(!isNaN(advRank))payload.adv_rank=advRank;
+
+  if(!payload.mains_percentile&&!payload.mains_marks&&!payload.mains_rank&&!payload.adv_marks&&!payload.adv_rank){
+    resultsEl.innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p>Please enter at least one score (Mains percentile/marks/rank or Advanced marks/rank).</p></div>';
+    return;
+  }
+
+  btn.disabled=true;btn.innerHTML='<span class="loading-spinner"></span> Predicting…';
+  resultsEl.innerHTML='<div class="empty-state"><div class="icon">⏳</div><p>Crunching the numbers…</p></div>';
+  try{
+    const r=await fetch('/api/rank-predictor',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const d=await r.json();
+    renderPredictorResults(d);
+  }catch(e){
+    resultsEl.innerHTML='<div class="empty-state"><div class="icon">❌</div><p>Error running prediction. Please try again.</p></div>';
+  }finally{
+    btn.disabled=false;btn.innerHTML='🔮 Predict My Rank &amp; Chances';
+    btn.textContent='🔮 Predict My Rank & Chances';
+  }
+}
+
+function renderPredictorResults(d){
+  const resultsEl=document.getElementById('predictor-results');
+  const c=d.computed||{};
+  let html='<div class="predictor-results">';
+
+  html+='<div class="pr-stat-grid">';
+  if(d.mains_rank){
+    html+=`<div class="pr-stat"><div class="pr-label">Mains CRL Rank</div><div class="pr-value">${d.mains_rank.toLocaleString()}</div>${c.predicted_percentile?`<div class="pr-sub">≈ ${c.predicted_percentile}th percentile</div>`:''}</div>`;
+  }
+  if(c.predicted_percentile&&!d.mains_rank){
+    html+=`<div class="pr-stat"><div class="pr-label">Est. Percentile</div><div class="pr-value">${c.predicted_percentile}</div></div>`;
+  }
+  if(d.adv_rank){
+    html+=`<div class="pr-stat"><div class="pr-label">Advanced Rank</div><div class="pr-value">${d.adv_rank.toLocaleString()}</div><div class="pr-sub">Used for IITs</div></div>`;
+  }
+  if(d.category&&d.category!=='OPEN'){
+    html+=`<div class="pr-stat"><div class="pr-label">Category</div><div class="pr-value" style="font-size:1rem">${escapeHtml(d.category)}</div><div class="pr-sub">${d.relaxation?d.relaxation.toFixed(2)+'× relaxation vs OPEN':''}</div></div>`;
+  }
+  html+='</div>';
+
+  if(d.warnings&&d.warnings.length){
+    html+=d.warnings.map(w=>`<div class="pr-warning-box">⚠️ ${escapeHtml(w)}</div>`).join('');
+  }
+
+  if(d.branch_chances&&d.branch_chances.length){
+    html+='<h4 style="font-size:0.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Branch-wise Admission Chances</h4>';
+    d.branch_chances.forEach(b=>{
+      const chanceClass=(b.chance_label||'moderate').toLowerCase();
+      html+=`<div class="pr-branch-row">
+        <div>
+          <div class="pr-branch-name">${escapeHtml((b.branch_category||'').replace(/_/g,' '))}</div>
+          <div class="pr-branch-meta">${b.options_count} matching programs found</div>
+        </div>
+        <div style="text-align:right">
+          <span class="badge ${getChanceBadge(b.chance_label)}">${b.chance_label}</span>
+          <div class="pr-branch-meta">avg ${b.avg_admission_probability}% · best ${b.best_case_probability}%</div>
+        </div>
+      </div>`;
+    });
+  }
+
+  if(d.ai_narrative){
+    html+='<h4 style="font-size:0.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:6px;margin-bottom:8px">🤖 AI Analysis</h4>';
+    html+=`<div class="pr-narrative">${escapeHtml(d.ai_narrative)}</div>`;
+  }
+
+  html+='</div>';
+  resultsEl.innerHTML=html;
+}
+
+/* ═══════════════════════════════════════════
+   STUDYCORD JS
+═══════════════════════════════════════════ */
+const SC_API='/community';
+let scUser='',scColor='',scActiveTab='feed',scActiveGroupId=null;
+let scFeedWs=null,scGroupWs=null;
+let scInited=false;
+const SC_COLORS=['#5865F2','#57F287','#FEE75C','#EB459E','#ED4245','#3BA55C','#FAA81A','#00B0F4','#9B59B6','#E67E22'];
+const SC_EMOJIS=['👍','❤️','🔥','😂','😮','🎯','💯','🤔'];
+
+let scFeedMediaUrl='',scFeedMediaType='',scFeedMediaFilename='';
+let scGroupMediaUrl='',scGroupMediaType='',scGroupMediaFilename='';
+
+async function scInitIfNeeded(){
+  if(scInited)return;scInited=true;
+  const saved=localStorage.getItem('sc_user'),savedColor=localStorage.getItem('sc_color');
+  if(saved){
+    scUser=saved;scColor=savedColor||SC_COLORS[0];
+    document.getElementById('sc-username-modal').classList.remove('visible');
+    await scStartSession();
+  }
+  document.getElementById('sc-username-input').addEventListener('keydown',e=>{if(e.key==='Enter')scSetUsername()});
+}
+
+async function scStartSession(){
+  scSetupUser();
+  await scRestoreJoinCodes();
+  scLoadFeed();
+  scConnectFeedWs();
+}
+
+async function scSetUsername(){
+  const v=document.getElementById('sc-username-input').value.trim();if(!v)return;
+  scUser=v;scColor=SC_COLORS[Math.floor(Math.random()*SC_COLORS.length)];
+  localStorage.setItem('sc_user',scUser);localStorage.setItem('sc_color',scColor);
+  const code=(document.getElementById('sc-secret-code-input')?.value||'').trim().toUpperCase();
+  if(code)await scJoinGroupByCode(code,false);
+  document.getElementById('sc-username-modal').classList.remove('visible');
+  await scStartSession();
+}
+
+function scSetupUser(){
+  const av=document.getElementById('sc-sidebar-avatar');
+  if(av){av.textContent=scUser[0].toUpperCase();av.style.background=scColor}
+}
+
+function scConnectFeedWs(){
+  const proto=location.protocol==='https:'?'wss':'ws';
+  scFeedWs=new WebSocket(`${proto}://${location.host}/ws/feed`);
+  const statusEl=document.getElementById('sc-feed-status');
+  const textEl=document.getElementById('sc-feed-status-text');
+  scFeedWs.onopen=()=>{if(statusEl)statusEl.className='sc-conn-status';if(textEl)textEl.textContent='Live'};
+  scFeedWs.onmessage=e=>{
+    const data=JSON.parse(e.data);
+    if(data.type==='ping')return;
+    if(data.type==='new_post'){scPrependPost(data.post);return}
+    if(data.type==='post_deleted'){document.querySelector(`[data-post-id="${data.post_id}"]`)?.remove();return}
+    if(data.type==='reaction_update'){scUpdateReactions(data.post_id,data.reactions);return}
+    if(data.type==='comment_added'){scUpdateCommentCount(data.post_id,data.comment_count);return}
+    if(data.type==='join_request' && data.created_by===scUser){
+      scShowToast(`${data.username} requested to join ${data.group_name || 'your group'}`);
+      scLoadMyGroups();
+      return;
+    }
+    if(data.type==='request_approved' && data.username===scUser){
+      scShowToast(`Your join request for ${data.group_name || 'the group'} was accepted.`);
+      scLoadMyGroups();
+      return;
+    }
+    if(data.type==='request_rejected' && data.username===scUser){
+      scShowToast(`Your join request for ${data.group_name || 'the group'} was rejected.`);
+      return;
+    }
+  };
+  scFeedWs.onerror=()=>{if(statusEl)statusEl.className='sc-conn-status disconnected';if(textEl)textEl.textContent='Error'};
+  scFeedWs.onclose=()=>{if(statusEl)statusEl.className='sc-conn-status disconnected';if(textEl)textEl.textContent='Reconnecting…';setTimeout(scConnectFeedWs,3000)};
+}
+
+function scConnectGroupWs(groupId){
+  if(scGroupWs){scGroupWs.close();scGroupWs=null}
+  const proto=location.protocol==='https:'?'wss':'ws';
+  scGroupWs=new WebSocket(`${proto}://${location.host}/ws/group/${groupId}`);
+  scGroupWs.onmessage=e=>{
+    const data=JSON.parse(e.data);
+    if(data.type==='ping')return;
+    if(data.type==='new_message'&&data.group_id===scActiveGroupId){
+      const el=document.getElementById('sc-gc-messages');
+      const wasAtBottom=el?scIsAtBottom(el,80):true;
+      scAppendGroupMessage(data.message);
+      if(!wasAtBottom)document.getElementById('sc-gc-new-btn')?.classList.remove('hidden');
+      return;
+    }
+    if(data.type==='message_deleted'&&data.group_id===scActiveGroupId)document.querySelector(`[data-msg-id="${data.msg_id}"]`)?.remove();
+    if(data.type==='join_request'&&data.group_id===scActiveGroupId){
+      scShowToast(`${data.username} requested to join`);
+      return;
+    }
+    if(data.type==='request_approved'&&data.group_id===scActiveGroupId){
+      scShowToast(`${data.username} was approved.`);
+      return;
+    }
+    if(data.type==='request_rejected'&&data.group_id===scActiveGroupId){
+      scShowToast(`${data.username} was rejected.`);
+      return;
+    }
+  };
+  scGroupWs.onopen=()=>{const t=document.getElementById('sc-group-status-text');if(t)t.textContent='Live'};
+  scGroupWs.onclose=()=>{setTimeout(()=>{if(scActiveGroupId===groupId)scConnectGroupWs(groupId)},3000)};
+}
+
+function scDisconnectGroupWs(){if(scGroupWs){scGroupWs.close();scGroupWs=null}}
+
+function scPrependPost(post){
+  const list=document.getElementById('sc-feed-list');if(!list)return;
+  list.querySelector('.sc-empty-state')?.remove();
+  const el=document.createElement('div');el.innerHTML=scRenderPost(post);
+  list.insertBefore(el.firstChild,list.firstChild);
+}
+function scUpdateReactions(postId,reactions){
+  const card=document.querySelector(`[data-post-id="${postId}"]`);if(!card)return;
+  const bar=card.querySelector('.sc-rxn-bar');if(!bar)return;
+  bar.querySelectorAll('.sc-rxn-btn').forEach(b=>b.remove());
+  const rxnHtml=Object.entries(reactions||{}).map(([em,users])=>`<button class="sc-rxn-btn ${users.includes(scUser)?'active':''}" onclick="scReactPost('${postId}','${em}')">${em} ${users.length}</button>`).join('');
+  bar.insertAdjacentHTML('afterbegin',rxnHtml);
+}
+function scUpdateCommentCount(postId,count){
+  const toggle=document.querySelector(`[data-post-id="${postId}"] .sc-comment-toggle`);
+  if(toggle)toggle.textContent=`💬 ${count}`;
+}
+function scAppendGroupMessage(msg){
+  const el=document.getElementById('sc-gc-messages');if(!el)return;
+  el.querySelector('.sc-empty-state')?.remove();
+  el.insertAdjacentHTML('beforeend',scRenderGroupMsg(msg));
+  if(scIsAtBottom(el,80))el.scrollTop=el.scrollHeight;
+}
+
+function scSwitchTab(tab){
+  scActiveTab=tab;
+  document.querySelectorAll('.sc-nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.scTab===tab));
+  document.getElementById('sc-feed-panel').classList.toggle('hidden',tab!=='feed');
+  document.getElementById('sc-groups-panel').classList.toggle('hidden',tab!=='groups');
+  document.getElementById('sc-ai-panel').classList.toggle('hidden',tab!=='ai');
+  if(tab==='groups')scLoadMyGroups();
+  if(tab!=='groups'){scDisconnectGroupWs();scActiveGroupId=null}
+}
+
+async function scLoadFeed(){
+  try{const r=await fetch(SC_API+'/api/posts?page=0'),d=await r.json();scRenderFeed(d.posts)}catch(e){}
+}
+
+function scRenderFeed(posts){
+  const el=document.getElementById('sc-feed-list');
+  if(!posts.length){el.innerHTML='<div class="sc-empty-state"><div class="sc-empty-icon">💬</div><p>No posts yet</p><small>Be the first to say something!</small></div>';return}
+  el.innerHTML=posts.map(p=>scRenderPost(p)).join('');
+}
+
+function scRenderPost(p){
+  const initials=p.author[0].toUpperCase(),time=scTimeAgo(p.timestamp);
+  const rxns=Object.entries(p.reactions||{}).map(([em,users])=>`<button class="sc-rxn-btn ${users.includes(scUser)?'active':''}" onclick="scReactPost('${p.id}','${em}')">${em} ${users.length}</button>`).join('');
+  let mediaHtml='';
+  if(p.media_url){
+    if(p.media_type==='image')mediaHtml=`<div class="sc-post-media"><img src="${p.media_url}" alt="post image" onclick="scOpenLightbox('${p.media_url}')" loading="lazy" referrerpolicy="no-referrer"/></div>`;
+    else if(p.media_type==='video')mediaHtml=`<div class="sc-post-media"><video src="${p.media_url}" controls preload="metadata"></video></div>`;
+    else mediaHtml=`<div class="sc-post-media"><a class="sc-doc-link" href="${p.media_url}" target="_blank" rel="noopener">📄 Download Document</a></div>`;
+  }
+  const isOwn=p.author===scUser;
+  const deleteBtn=isOwn?`<button class="sc-delete-btn" onclick="scDeletePost(event,'${p.id}')" title="Delete post">🗑️</button>`:'';
+  return`<div class="sc-post-card" data-post-id="${p.id}">
+    <div class="sc-post-avatar" style="background:${p.avatar_color||'#5865F2'}">${initials}</div>
+    <div class="sc-post-body">
+      <div class="sc-post-meta">
+        <span class="sc-post-author">${scEsc(p.author)}</span>
+        <span class="sc-post-time">${time}</span>
+        ${deleteBtn}
+      </div>
+      <div class="sc-post-content">${scEsc(p.content)}</div>
+      ${mediaHtml}
+      <div class="sc-post-actions">
+        <div class="sc-rxn-bar">${rxns}
+          <div class="sc-rxn-add">
+            <button class="sc-rxn-trigger" onclick="this.nextElementSibling.classList.toggle('show')">+</button>
+            <div class="sc-rxn-picker">${SC_EMOJIS.map(e=>`<button onclick="scReactPost('${p.id}','${e}');this.parentElement.classList.remove('show')">${e}</button>`).join('')}</div>
+          </div>
+        </div>
+        <button class="sc-comment-toggle" onclick="scToggleComments('${p.id}',this)">💬 ${p.comment_count||0}</button>
+      </div>
+      <div class="sc-comments-section hidden" id="sc-comments-${p.id}"></div>
+    </div>
+  </div>`;
+}
+
+async function scDeletePost(ev,postId){
+  ev.stopPropagation();
+  if(!confirm('Delete this post?'))return;
+  try{
+    await fetch(SC_API+`/api/posts/${postId}?author=${encodeURIComponent(scUser)}`,{method:'DELETE'});
+    document.querySelector(`[data-post-id="${postId}"]`)?.remove();
+  }catch(e){alert('Could not delete post')}
+}
+
+async function scUploadFile(file,uploadingEl){
+  const form=new FormData();form.append('file',file);
+  if(uploadingEl)uploadingEl.style.display='block';
+  try{
+    const r=await fetch(SC_API+'/api/upload',{method:'POST',body:form});
+    if(!r.ok)throw new Error('Upload failed: '+r.status);
+    return await r.json();
+  }catch(e){alert('Upload failed: '+e.message);return null}
+  finally{if(uploadingEl)uploadingEl.style.display='none'}
+}
+
+async function scHandleFeedFile(input){
+  const file=input.files[0];if(!file)return;
+  const uploadingEl=document.getElementById('sc-feed-uploading');
+  const sendBtn=document.getElementById('sc-feed-send-btn');
+  sendBtn.disabled=true;
+  const url=await scUploadFile(file,uploadingEl);
+  sendBtn.disabled=false;
+  if(!url)return;
+  scFeedMediaUrl=url.url;scFeedMediaType=url.media_type;scFeedMediaFilename=url.filename;
+  const content=document.getElementById('sc-feed-media-content');
+  content.innerHTML=url.media_type==='image'
+    ?`<img src="${url.url}" alt="preview" referrerpolicy="no-referrer"/>`
+    :url.media_type==='video'
+      ?`<video src="${url.url}" controls></video>`
+      :`<div class="sc-doc-preview">📄 ${scEsc(url.filename||file.name)}</div>`;
+  document.getElementById('sc-feed-media-preview').classList.add('show');
+  input.value='';
+}
+
+function scClearFeedMedia(){
+  scFeedMediaUrl='';scFeedMediaType='';scFeedMediaFilename='';
+  document.getElementById('sc-feed-media-preview').classList.remove('show');
+  document.getElementById('sc-feed-media-content').innerHTML='';
+}
+
+async function scSubmitPost(){
+  const inp=document.getElementById('sc-post-input');
+  const text=inp.value.trim();
+  if(!text&&!scFeedMediaUrl)return;
+  inp.value='';
+  const payload={author:scUser,avatar_color:scColor,content:text,media_url:scFeedMediaUrl,media_type:scFeedMediaType};
+  scClearFeedMedia();
+  try{await fetch(SC_API+'/api/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})}catch(e){}
+}
+
+async function scReactPost(postId,emoji){
+  try{await fetch(SC_API+`/api/posts/${postId}/react`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({author:scUser,emoji})})}catch(e){}
+}
+
+async function scToggleComments(postId){
+  const sec=document.getElementById('sc-comments-'+postId);
+  sec.classList.toggle('hidden');
+  if(!sec.classList.contains('hidden')){
+    try{
+      const r=await fetch(SC_API+`/api/posts/${postId}/comments`),d=await r.json();
+      sec.innerHTML=d.comments.map(c=>{
+        let cmedia='';
+        if(c.media_url)cmedia=c.media_type==='image'
+          ?`<div class="sc-comment-media"><img src="${c.media_url}" onclick="scOpenLightbox('${c.media_url}')" loading="lazy" referrerpolicy="no-referrer"/></div>`
+          :c.media_type==='video'
+            ?`<div class="sc-comment-media"><video src="${c.media_url}" controls></video></div>`
+            :`<div class="sc-comment-media"><a class="sc-doc-link" href="${c.media_url}" target="_blank" rel="noopener">📄 Download Document</a></div>`;
+        const isOwn=c.author===scUser;
+        const delBtn=isOwn?`<button class="sc-delete-btn" onclick="scDeleteComment(event,'${postId}','${c.id}')" title="Delete">🗑️</button>`:'';
+        return`<div class="sc-comment" data-comment-id="${c.id}">
+          <div class="sc-comment-avatar" style="background:${c.avatar_color||'#5865F2'}">${c.author[0].toUpperCase()}</div>
+          <div style="flex:1">
+            <span class="sc-comment-author">${scEsc(c.author)}</span> <span class="sc-comment-time">${scTimeAgo(c.timestamp)}</span> ${delBtn}
+            <div class="sc-comment-text">${scEsc(c.content)}</div>${cmedia}
+          </div>
+        </div>`;
+      }).join('')
+      +`<div class="sc-comment-form"><input type="text" placeholder="Write a comment…" maxlength="300" autocomplete="off" onkeydown="if(event.key==='Enter')scSubmitComment(event,'${postId}')"/><button onclick="scSubmitCommentBtn('${postId}',this)">↩</button></div>`;
+    }catch(e){}
+  }
+}
+
+async function scDeleteComment(ev,postId,commentId){
+  ev.stopPropagation();
+  if(!confirm('Delete this comment?'))return;
+  try{
+    await fetch(SC_API+`/api/posts/${postId}/comments/${commentId}?author=${encodeURIComponent(scUser)}`,{method:'DELETE'});
+    document.querySelector(`[data-comment-id="${commentId}"]`)?.remove();
+    const sec=document.getElementById('sc-comments-'+postId);
+    sec.classList.add('hidden');await scToggleComments(postId);
+  }catch(e){alert('Could not delete comment')}
+}
+
+async function scSubmitComment(e,postId){
+  const inp=e.target,text=inp.value.trim();if(!text)return;inp.value='';
+  try{await fetch(SC_API+`/api/posts/${postId}/comments`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({author:scUser,avatar_color:scColor,content:text})})}catch(e){}
+  const sec=document.getElementById('sc-comments-'+postId);sec.classList.add('hidden');await scToggleComments(postId);
+}
+async function scSubmitCommentBtn(postId,btn){
+  const inp=btn.previousElementSibling,text=inp.value.trim();if(!text)return;inp.value='';
+  try{await fetch(SC_API+`/api/posts/${postId}/comments`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({author:scUser,avatar_color:scColor,content:text})})}catch(e){}
+  const sec=document.getElementById('sc-comments-'+postId);sec.classList.add('hidden');await scToggleComments(postId);
+}
+
+function scOpenLightbox(url){document.getElementById('sc-lightbox-img').src=url;document.getElementById('sc-lightbox').classList.add('open')}
+
+/* ── Groups ── */
+async function scLoadMyGroups(){
+  try{
+    const [mineRes,pubRes]=await Promise.all([
+      fetch(SC_API+'/api/groups/mine?user='+encodeURIComponent(scUser)),
+      fetch(SC_API+'/api/groups/search?q=')
+    ]);
+    const mine=mineRes.ok?(await mineRes.json()).groups:[];
+    const pub=pubRes.ok?(await pubRes.json()).groups:[];
+    scRenderGroupsSplit(mine,pub);
+  }catch(e){}
+}
+
+async function scSearchGroups(){
+  const q=document.getElementById('sc-group-search').value.trim();
+  try{
+    const [mineRes,pubRes]=await Promise.all([
+      fetch(SC_API+'/api/groups/mine?user='+encodeURIComponent(scUser)),
+      fetch(SC_API+'/api/groups/search?q='+encodeURIComponent(q))
+    ]);
+    const mine=mineRes.ok?(await mineRes.json()).groups:[];
+    const pub=pubRes.ok?(await pubRes.json()).groups:[];
+    scRenderGroupsSplit(mine,pub);
+  }catch(e){}
+}
+
+function scGroupItemHtml(g){
+  const typeClass=g.group_type==='private'?'private':'public';
+  const typeBadge=g.group_type==='private'?'🔒 Private':'🌐 Public';
+  const reqCount = g.pending_requests || 0;
+  const requestBadge = g.created_by===scUser && reqCount > 0 ? `<span class="sc-request-badge">${reqCount} request${reqCount===1?'':'s'}</span>` : '';
+  return`<div class="sc-group-item ${g.id===scActiveGroupId?'active':''}" data-owner="${scEsc(g.created_by||'')}" onclick="scOpenGroupChat('${g.id}','${scEsc(g.name)}','${g.group_type||'public'}',this.dataset.owner)">
+    <div class="sc-group-icon">${g.name[0].toUpperCase()}</div>
+    <div class="sc-group-info">
+      <div class="sc-group-name">${scEsc(g.name)} ${requestBadge}</div>
+      <div class="sc-group-meta">
+        <span class="sc-group-type-badge ${typeClass}">${typeBadge}</span>
+        ${g.member_count||'?'} members${g.subject?' · '+scEsc(g.subject):''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function scRenderGroupsSplit(mine,pub){
+  const el=document.getElementById('sc-groups-list');
+  const myIds=new Set(mine.map(g=>g.id));
+  const discover=pub.filter(g=>!myIds.has(g.id));
+  let html='';
+  if(mine.length){html+=`<div class="sc-groups-section-label">YOUR GROUPS</div>`;html+=mine.map(scGroupItemHtml).join('')}
+  if(discover.length){html+=`<div class="sc-groups-section-label" style="margin-top:${mine.length?'10px':'0'}">DISCOVER</div>`;html+=discover.map(scGroupItemHtml).join('')}
+  if(!mine.length&&!discover.length)html=`<div class="sc-empty-state"><div class="sc-empty-icon">👥</div><p>No groups yet</p><small>Create or join one</small><div style="display:flex;gap:8px;justify-content:center;margin-top:10px"><button class="sc-btn-accent" style="flex:none;padding:7px 14px" onclick="scOpenCreateGroup()">+ Create</button><button class="sc-btn-secondary" style="flex:none;padding:7px 14px" onclick="scOpenJoinGroup()">Join</button></div></div>`;
+  el.innerHTML=html;
+}
+
+function scOpenCreateGroup(){document.getElementById('sc-create-group-modal').classList.add('visible')}
+function scOpenJoinGroup(){document.getElementById('sc-join-group-modal').classList.add('visible')}
+function scCloseModals(){['sc-create-group-modal','sc-join-group-modal','sc-code-reveal-modal'].forEach(id=>document.getElementById(id).classList.remove('visible'))}
+
+async function scCreateGroup(){
+  const name=document.getElementById('sc-cg-name').value.trim();if(!name)return;
+  const expiryMonths=parseInt(document.getElementById('sc-cg-expiry').value)||3;
+  const groupType=document.getElementById('sc-cg-type').value;
+  try{
+    const r=await fetch(SC_API+'/api/groups',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,subject:document.getElementById('sc-cg-subject').value.trim(),expiry_months:expiryMonths,group_type:groupType,created_by:scUser,avatar_color:scColor})});
+    const d=await r.json();scCloseModals();
+    document.getElementById('sc-reveal-code').textContent=d.code;
+    document.getElementById('sc-code-reveal-modal').classList.add('visible');
+    scLoadMyGroups();
+  }catch(e){alert('Error creating group')}
+}
+
+async function scJoinGroupByCode(code,showErrors=true){
+  try{
+    const r=await fetch(SC_API+'/api/groups/join',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,username:scUser,avatar_color:scColor})});
+    const d=await r.json();
+    if(!r.ok){
+      if(showErrors){const errEl=document.getElementById('sc-join-error');errEl.textContent='❌ '+(d.detail==='Invalid code'?'No group with that code.':d.detail||'Could not join.');errEl.style.display='block'}
+      return {group:null, error:true, message:d.detail||'Could not join.'};
+    }
+    if(d.request_pending){
+      const raw=localStorage.getItem('sc_join_codes');let codes=[];
+      try{codes=JSON.parse(raw)||[]}catch(e){codes=[]}
+      if(!codes.includes(code)){codes.push(code);localStorage.setItem('sc_join_codes',JSON.stringify(codes))}
+      return {group:null, request_pending:true, message:d.message||'Join request sent. Waiting for approval.'};
+    }
+    const raw=localStorage.getItem('sc_join_codes');let codes=[];
+    try{codes=JSON.parse(raw)||[]}catch(e){codes=[]}
+    if(!codes.includes(code)){codes.push(code);localStorage.setItem('sc_join_codes',JSON.stringify(codes))}
+    return {group:d.group||null, request_pending:false, message:''};
+  }catch(e){
+    if(showErrors){const errEl=document.getElementById('sc-join-error');errEl.textContent='❌ Network error.';errEl.style.display='block'}
+    return {group:null, error:true, message:'Network error.'};
+  }
+}
+
+async function scRestoreJoinCodes(){
+  const raw=localStorage.getItem('sc_join_codes');if(!raw)return;
+  let codes=[];try{codes=JSON.parse(raw)||[]}catch(e){codes=[]}
+  if(!Array.isArray(codes)||!codes.length)return;
+  const kept=[];
+  for(const code of codes){
+    if(typeof code!=='string'||!code)continue;
+    const result=await scJoinGroupByCode(code,false);
+    if(result.group || result.request_pending){
+      kept.push(code);
+    }
+  }
+  localStorage.setItem('sc_join_codes',JSON.stringify(kept));
+}
+
+async function scJoinGroup(){
+  const code=document.getElementById('sc-join-code').value.trim().toUpperCase();
+  const errEl=document.getElementById('sc-join-error');errEl.style.display='none';errEl.style.color='#dc2626';
+  if(code.length!==6){errEl.textContent='⚠️ Code must be 6 characters';errEl.style.display='block';return}
+  const result=await scJoinGroupByCode(code,true);
+  if(result.error){return}
+  if(result.request_pending){
+    errEl.style.color='#2563eb';
+    errEl.textContent=result.message||'Join request sent. Waiting for approval.';
+    errEl.style.display='block';
+    return;
+  }
+  if(!result.group) return;
+  scCloseModals();
+  document.getElementById('sc-join-code').value='';
+  scLoadMyGroups();
+  scOpenGroupChat(result.group.id,result.group.name,result.group.group_type||'public');
+}
+
+function scCopyCode(){
+  const code=document.getElementById('sc-reveal-code').textContent;
+  navigator.clipboard.writeText(code).then(()=>{
+    document.getElementById('sc-reveal-code').classList.add('copied');
+    setTimeout(()=>document.getElementById('sc-reveal-code').classList.remove('copied'),1200);
+  });
+}
+
+/* ── Group Chat — flex column with pinned composer ── */
+async function scOpenGroupChat(groupId,groupName,groupType='public',groupOwner=''){
+  scDisconnectGroupWs();
+  scActiveGroupId=groupId;
+  scGroupMediaUrl='';scGroupMediaType='';scGroupMediaFilename='';
+  scLoadMyGroups();
+
+  const typeBadge=groupType==='private'?'🔒 Private':'🌐 Public';
+  const isOwner=groupOwner===scUser;
+  const actions=[];
+  actions.push(`<button class="sc-members-btn" onclick="scShowMembers('${groupId}','${scEsc(groupOwner)}')">👥 Members</button>`);
+  if(isOwner){
+    actions.push(`<button class="sc-members-btn" onclick="scShowGroupRequests('${groupId}')">📩 Requests</button>`);
+    actions.push(`<button class="sc-members-btn" onclick="scDeleteGroup('${groupId}')" style="background:#ED4245;color:white;border-color:#ED4245">Delete</button>`);
+  }else{
+    actions.push(`<button class="sc-members-btn" onclick="scLeaveGroup('${groupId}')" style="background:#5865F2;color:white;border-color:#5865F2">Leave</button>`);
+  }
+
+  const chat=document.getElementById('sc-group-chat');
+  // ★ Correct structure: header + scrollable messages + pinned composer
+  chat.innerHTML=`
+    <div class="sc-gc-header">
+      <h3># ${scEsc(groupName)} <span style="font-size:0.7rem;font-weight:500;color:var(--sc-text-muted)">${typeBadge}</span></h3>
+      <div style="display:flex;gap:6px;align-items:center">
+        <div class="sc-conn-status" id="sc-group-status"><span class="sc-live-dot"></span><span id="sc-group-status-text">Connecting…</span></div>
+        <button id="sc-gc-new-btn" class="sc-new-btn hidden" onclick="scScrollGroupToBottom()">↓ New</button>
+        ${actions.join('')}
+      </div>
+    </div>
+    <div class="sc-gc-messages" id="sc-gc-messages"></div>
+    <div class="sc-composer-wrap">
+      <div class="sc-media-preview" id="sc-group-media-preview">
+        <button class="sc-media-remove" onclick="scClearGroupMedia()">✕</button>
+        <span id="sc-group-media-content"></span>
+      </div>
+      <div id="sc-group-uploading" class="sc-uploading" style="display:none">⏳ Uploading…</div>
+      <div class="sc-composer">
+        <button class="sc-media-btn" onclick="document.getElementById('sc-group-file-input').click()" title="Attach">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </button>
+        <input class="sc-media-upload-input" id="sc-group-file-input" type="file" accept="image/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="scHandleGroupFile(this,'${groupId}')"/>
+        <input type="text" id="sc-gc-input" placeholder="Message #${scEsc(groupName)}…" maxlength="1000" autocomplete="off" onkeydown="if(event.key==='Enter')scSendGroupMsg('${groupId}')"/>
+        <button class="sc-send-btn" id="sc-group-send-btn-${groupId}" onclick="scSendGroupMsg('${groupId}')" title="Send">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>`;
+
+  // Scroll listener for new-message button
+  const msgs=document.getElementById('sc-gc-messages');
+  if(msgs)msgs.addEventListener('scroll',()=>{if(scIsAtBottom(msgs,80))document.getElementById('sc-gc-new-btn')?.classList.add('hidden')});
+
+  await scLoadGroupMsgs(groupId);
+  scConnectGroupWs(groupId);
+}
+
+async function scLoadGroupMsgs(groupId){
+  try{
+    const r=await fetch(SC_API+`/api/groups/${groupId}/messages`);
+    if(!r.ok)throw new Error('Not found');
+    const d=await r.json();
+    if(d.group_id&&d.group_id!==groupId)return;
+    const el=document.getElementById('sc-gc-messages');if(!el)return;
+    if(!d.messages.length){el.innerHTML='<div class="sc-empty-state" style="margin-top:32px"><div class="sc-empty-icon">💬</div><p>No messages yet</p><small>Start the conversation!</small></div>';return}
+    el.innerHTML=d.messages.map(m=>scRenderGroupMsg(m)).join('');
+    setTimeout(()=>{el.scrollTop=el.scrollHeight;const inp=document.getElementById('sc-gc-input');if(inp)inp.focus()},50);
+  }catch(e){console.error('Group msgs:',e)}
+}
+
+function scRenderGroupMsg(m){
+  let mediaHtml='';
+  if(m.media_url){
+    if(m.media_type==='image')mediaHtml=`<div class="sc-msg-media"><img src="${m.media_url}" onclick="scOpenLightbox('${m.media_url}')" loading="lazy" referrerpolicy="no-referrer" style="max-width:260px;max-height:180px;border-radius:8px;cursor:pointer"/></div>`;
+    else if(m.media_type==='video')mediaHtml=`<div class="sc-msg-media"><video src="${m.media_url}" controls style="max-width:260px;max-height:180px;border-radius:8px"></video></div>`;
+    else mediaHtml=`<div class="sc-msg-media"><a class="sc-doc-link" href="${m.media_url}" target="_blank" rel="noopener">📄 Download Document</a></div>`;
+  }
+  const isOwn=m.author===scUser;
+  const delBtn=isOwn?`<button class="sc-delete-btn" onclick="scDeleteGroupMsg(event,'${m.group_id}','${m.id}')" title="Delete">🗑️</button>`:'';
+  return`<div class="sc-gc-msg" data-msg-id="${m.id}">
+    <div class="sc-post-avatar" style="background:${m.avatar_color||'#5865F2'};width:36px;height:36px;font-size:0.88rem">${m.author[0].toUpperCase()}</div>
+    <div style="flex:1">
+      <span class="sc-post-author">${scEsc(m.author)}</span> <span class="sc-post-time">${scTimeAgo(m.timestamp)}</span> ${delBtn}
+      <div class="sc-post-content">${scEsc(m.content)}</div>${mediaHtml}
+    </div>
+  </div>`;
+}
+
+async function scDeleteGroupMsg(ev,groupId,msgId){
+  ev.stopPropagation();
+  if(!confirm('Delete this message?'))return;
+  try{await fetch(SC_API+`/api/groups/${groupId}/messages/${msgId}?author=${encodeURIComponent(scUser)}`,{method:'DELETE'});document.querySelector(`[data-msg-id="${msgId}"]`)?.remove()}catch(e){alert('Could not delete message')}
+}
+
+async function scHandleGroupFile(input,groupId){
+  const file=input.files[0];if(!file)return;
+  const uploadingEl=document.getElementById('sc-group-uploading');
+  const sendBtn=document.getElementById(`sc-group-send-btn-${groupId}`);
+  if(sendBtn)sendBtn.disabled=true;
+  const url=await scUploadFile(file,uploadingEl);
+  if(sendBtn)sendBtn.disabled=false;
+  if(!url)return;
+  scGroupMediaUrl=url.url;scGroupMediaType=url.media_type;scGroupMediaFilename=url.filename;
+  const content=document.getElementById('sc-group-media-content');
+  content.innerHTML=url.media_type==='image'
+    ?`<img src="${url.url}" alt="preview" referrerpolicy="no-referrer"/>`
+    :url.media_type==='video'
+      ?`<video src="${url.url}" controls></video>`
+      :`<div class="sc-doc-preview">📄 ${scEsc(url.filename||file.name)}</div>`;
+  document.getElementById('sc-group-media-preview').classList.add('show');
+  input.value='';
+}
+
+function scClearGroupMedia(){
+  scGroupMediaUrl='';scGroupMediaType='';scGroupMediaFilename='';
+  document.getElementById('sc-group-media-preview')?.classList.remove('show');
+  const c=document.getElementById('sc-group-media-content');if(c)c.innerHTML='';
+}
+
+async function scSendGroupMsg(groupId){
+  if(scActiveGroupId!==groupId)return;
+  const inp=document.getElementById('sc-gc-input');
+  const text=inp.value.trim();
+  if(!text&&!scGroupMediaUrl)return;
+  inp.value='';
+  const payload={author:scUser,avatar_color:scColor,content:text,media_url:scGroupMediaUrl,media_type:scGroupMediaType};
+  scClearGroupMedia();
+  try{await fetch(SC_API+`/api/groups/${groupId}/messages`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})}catch(e){console.error(e)}
+  setTimeout(()=>scScrollGroupToBottom(),100);
+}
+
+async function scShowMembers(groupId,groupOwner){
+  try{
+    const r=await fetch(SC_API+`/api/groups/${groupId}/members`);
+    const d=await r.json();
+    const lines=d.members.map(m=>`${m.username}${m.username===groupOwner?' (owner)':''}`).join('\n');
+    if(groupOwner===scUser){
+      const remove=prompt(`Members:\n${lines}\n\nEnter a member name to remove, or leave blank to cancel:`);
+      if(remove)await scRemoveGroupMember(groupId,remove.trim());
+    }else{alert(`Members:\n${lines}`)}
+  }catch(e){console.error(e)}
+}
+
+async function scShowGroupRequests(groupId){
+  try{
+    const r=await fetch(SC_API+`/api/groups/${groupId}/requests?owner=${encodeURIComponent(scUser)}`);
+    const d=await r.json();
+    const list=document.getElementById('sc-requests-list');
+    if(!list)return;
+    if(!d.requests.length){
+      list.innerHTML='<div class="sc-request-empty">No pending join requests.</div>';
+    } else {
+      list.innerHTML=d.requests.map(req=>`
+        <div class="sc-request-item">
+          <div class="sc-request-meta">
+            <span class="sc-request-username">${scEsc(req.username)}</span>
+            <span class="sc-request-time">Requested ${scTimeAgo(req.requested_at)}</span>
+          </div>
+          <div class="sc-request-actions">
+            <button class="sc-request-approve" onclick="scApproveRequest('${groupId}','${scEsc(req.username)}')">Yes</button>
+            <button class="sc-request-reject" onclick="scRejectRequest('${groupId}','${scEsc(req.username)}')">No</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    document.getElementById('sc-requests-modal').classList.add('visible');
+  }catch(e){console.error(e)}
+}
+
+function scCloseRequestsModal(){document.getElementById('sc-requests-modal').classList.remove('visible')}
+
+async function scApproveRequest(groupId, username){
+  try{
+    await fetch(SC_API+`/api/groups/${groupId}/requests/${encodeURIComponent(username)}/approve?owner=${encodeURIComponent(scUser)}`,{method:'POST'});
+    scShowGroupRequests(groupId);
+    scShowToast(`${username} has been approved.`);
+    scLoadMyGroups();
+  }catch(e){console.error(e)}
+}
+
+async function scRejectRequest(groupId, username){
+  try{
+    await fetch(SC_API+`/api/groups/${groupId}/requests/${encodeURIComponent(username)}/reject?owner=${encodeURIComponent(scUser)}`,{method:'POST'});
+    scShowGroupRequests(groupId);
+    scShowToast(`${username} has been rejected.`);
+  }catch(e){console.error(e)}
+}
+
+function scShowToast(message){
+  let toast=document.getElementById('sc-request-toast');
+  if(!toast){
+    toast=document.createElement('div');toast.id='sc-request-toast';toast.className='sc-request-toast';document.body.appendChild(toast);
+  }
+  toast.textContent=message;toast.classList.add('visible');
+  clearTimeout(window.scRequestToastTimeout);
+  window.scRequestToastTimeout=setTimeout(()=>toast.classList.remove('visible'),3000);
+}
+
+async function scRemoveGroupMember(groupId,member){
+  if(!member)return;
+  if(!confirm(`Remove ${member} from this group?`))return;
+  try{await fetch(SC_API+`/api/groups/${groupId}/members/${encodeURIComponent(member)}?owner=${encodeURIComponent(scUser)}`,{method:'DELETE'});alert(`${member} removed.`);scLoadGroupMsgs(groupId);scLoadMyGroups()}catch(e){alert('Could not remove member.')}
+}
+
+async function scLeaveGroup(groupId){
+  if(!confirm('Leave this group?'))return;
+  try{await fetch(SC_API+`/api/groups/${groupId}/leave`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:scUser})});alert('You left the group.');scLoadMyGroups();document.getElementById('sc-group-chat').innerHTML=''}catch(e){alert('Could not leave group.')}
+}
+
+async function scDeleteGroup(groupId){
+  if(!confirm('Delete this group and remove all members? This cannot be undone.'))return;
+  try{await fetch(SC_API+`/api/groups/${groupId}?owner=${encodeURIComponent(scUser)}`,{method:'DELETE'});alert('Group deleted.');scLoadMyGroups();document.getElementById('sc-group-chat').innerHTML=''}catch(e){alert('Could not delete group.')}
+}
+
+/* ── AI Tasks ── */
+async function scGetAiTasks(){
+  const subject=document.getElementById('sc-ai-subject').value.trim();if(!subject)return;
+  const btn=document.getElementById('sc-ai-btn');btn.disabled=true;btn.textContent='Generating…';
+  try{
+    const r=await fetch(SC_API+'/api/ai/tasks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:scUser,subject,context:document.getElementById('sc-ai-context').value.trim()})});
+    const d=await r.json();
+    document.getElementById('sc-ai-results').innerHTML=`<div class="sc-tasks-card"><h3>📋 Study Plan: ${scEsc(subject)}</h3>${d.tasks.map(t=>`<label class="sc-task-item"><input type="checkbox" ${t.done?'checked':''}><span>${scEsc(t.text)}</span></label>`).join('')}</div>`;
+  }catch(e){console.error(e)}
+  btn.disabled=false;btn.textContent='Generate Tasks';
+}
+
+/* ── Utilities ── */
+function scEsc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+function scTimeAgo(ts){
+  const diff=(Date.now()-new Date(ts).getTime())/1000;
+  if(diff<60)return'just now';if(diff<3600)return Math.floor(diff/60)+'m ago';
+  if(diff<86400)return Math.floor(diff/3600)+'h ago';return Math.floor(diff/86400)+'d ago';
+}
+function scIsAtBottom(el,threshold=50){if(!el)return true;return(el.scrollHeight-el.scrollTop-el.clientHeight)<=threshold}
+function scScrollGroupToBottom(){
+  const el=document.getElementById('sc-gc-messages');
+  if(!el)return;
+  el.scrollTop=el.scrollHeight;
+  document.getElementById('sc-gc-new-btn')?.classList.add('hidden');
+  const inp=document.getElementById('sc-gc-input');
+  if(inp)inp.focus();
+}
+</script>
+</body>
+</html>
