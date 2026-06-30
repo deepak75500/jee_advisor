@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # JEE 2025 College Advisor 🎓
 
 An intelligent, AI-powered portal to help JEE students find the best college + branch combinations based on their rank, home state, gender, and interests.
@@ -91,3 +92,6 @@ This ensures the student sees realistic options — not too easy, not too far ou
 
 ## License
 MIT — open source, free to use and modify.
+=======
+# jee_advisor
+>>>>>>> 8d6099552927af9ebe5bc0d2aedb1248704665e4
