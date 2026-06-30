@@ -26,7 +26,11 @@ openpyxl==3.1.3                # .xlsx parsing for JEE cutoff + college data fil
 pydantic==2.7.1                # Request / response models (BaseModel, Field)
 
 # ── AI — Primary (Groq) ───────────────────────────────────────────────────────
-groq==0.9.0                    # from groq import Groq  (LLaMA-3.3-70B-Versatile)
+groq>=0.11.0                   # from groq import Groq  (LLaMA-3.3-70B-Versatile)
+# groq 0.9.0 passes proxies= to httpx.Client which was removed in httpx 0.28.0
+# → TypeError: Client.__init__() got an unexpected keyword argument 'proxies'
+# Fix: groq>=0.11.0 uses the new httpx proxy= API
+httpx>=0.27.0,<0.29.0          # pin to avoid future httpx breaking changes with groq
 
 # ── AI — Secondary / Optional (Google Gemini) ────────────────────────────────
 # Used via: from google import genai  (google-genai SDK, NOT google-generativeai)
@@ -39,10 +43,10 @@ mysql-connector-python==8.4.0  # Connection pool + all DB operations in database
 # ── Cloud storage (MEGA) ──────────────────────────────────────────────────────
 # pycrypto (mega.py's default dep) is broken on Python 3.12+ — use pycryptodome instead.
 # pycryptodome provides the same `Crypto` namespace as pycrypto, so mega.py works as-is.
-         # Replaces dead pycrypto package; same Crypto.* API
+pycryptodome>=3.19.0           # Replaces dead pycrypto package; same Crypto.* API
 # Install mega.py WITHOUT its own deps to avoid pip pulling in pycrypto:
 #   pip install mega.py==1.0.0 --no-deps
-mega.py
+mega.py==1.0.0
 requests==2.32.3               # Used internally by mega.py
 
 # ── Selenium (Perplexity scraper) ─────────────────────────────────────────────
