@@ -39,10 +39,10 @@ mysql-connector-python==8.4.0  # Connection pool + all DB operations in database
 # ── Cloud storage (MEGA) ──────────────────────────────────────────────────────
 # pycrypto (mega.py's default dep) is broken on Python 3.12+ — use pycryptodome instead.
 # pycryptodome provides the same `Crypto` namespace as pycrypto, so mega.py works as-is.
-pycryptodome>=3.19.0           # Replaces dead pycrypto package; same Crypto.* API
+         # Replaces dead pycrypto package; same Crypto.* API
 # Install mega.py WITHOUT its own deps to avoid pip pulling in pycrypto:
 #   pip install mega.py==1.0.0 --no-deps
-mega.py==1.0.0
+mega.py
 requests==2.32.3               # Used internally by mega.py
 
 # ── Selenium (Perplexity scraper) ─────────────────────────────────────────────
