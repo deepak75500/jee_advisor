@@ -46,7 +46,7 @@ mysql-connector-python==8.4.0  # Connection pool + all DB operations in database
 pycryptodome>=3.19.0           # Replaces dead pycrypto package; same Crypto.* API
 # Install mega.py WITHOUT its own deps to avoid pip pulling in pycrypto:
 #   pip install mega.py==1.0.0 --no-deps
-mega.py==1.0.0
+mega.py
 requests==2.32.3               # Used internally by mega.py
 
 # ── Selenium (Perplexity scraper) ─────────────────────────────────────────────
