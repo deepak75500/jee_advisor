@@ -31,8 +31,9 @@ from contextlib import contextmanager
 
 import mysql.connector
 from mysql.connector import pooling
+from pathlib import Path
 from dotenv import load_dotenv
-load_dotenv()  # Load environment variables from .env file
+load_dotenv(dotenv_path=Path(__file__).parent / ".env")  # Load environment variables from .env file
 # ── Credentials (set in environment) ─────────────────────────────────────────
 TIDB_HOST     = os.getenv("TIDB_HOST")
 TIDB_PORT     = int(os.getenv("TIDB_PORT", "4000"))
@@ -456,7 +457,7 @@ def db_get_groups_public(q: str = "") -> List[dict]:
 def db_get_my_groups(username: str) -> List[dict]:
     rows = execute(
         """SELECT g.*, COUNT(gm2.username) AS member_count,
-                  COALESCE(reqs.pending_requests, 0) AS pending_requests
+                  COALESCE(MAX(reqs.pending_requests), 0) AS pending_requests
            FROM `groups` g
            JOIN group_members gm ON gm.group_id=g.id AND gm.username=%s
            LEFT JOIN group_members gm2 ON gm2.group_id=g.id
