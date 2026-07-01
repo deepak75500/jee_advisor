@@ -45,6 +45,7 @@ from fastapi import (
     FastAPI, Request, HTTPException,
     WebSocket, WebSocketDisconnect,
     UploadFile, File, Query,
+    BackgroundTasks,
 )
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -66,9 +67,9 @@ from database import (
     db_get_college_insights, db_set_college_insights,
     db_get_scrape,
 )
-from p_scraper import scrape_college_info
+from p_scraper import scrape_college_info, _make_key
 from dotenv import load_dotenv
-load_dotenv(dotenv_path=Path(__file__).parent / ".env")
+load_dotenv(dotenv_path=Path(__file__).parent / ".env")  # Load environment variables from .env file
 # ── MEGA ──────────────────────────────────────────────────────────────────────
 try:
     from mega import Mega
@@ -120,7 +121,7 @@ _EXT_MIME_MAP: Dict[str, str] = {
 _executor = ThreadPoolExecutor(max_workers=8)
 groq_client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
 from dotenv import load_dotenv
-load_dotenv()  # Load environment variables from .env file
+load_dotenv(dotenv_path=Path(__file__).parent / ".env")  # Load environment variables from .env file
 try:
     from google import genai
     GOOGLE_GEMINI_API_KEY = os.getenv("GOOGLE_GEMINI_API_KEY") or os.getenv("GENAI_API_KEY")
@@ -609,6 +610,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 templates = Jinja2Templates(directory="templates")
+
+# Ensure local static/uploads directory exists for fallback uploads
+UPLOADS_DIR = Path("static/uploads")
+UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 async def _group_cleanup_loop():
@@ -2175,7 +2181,7 @@ async def college_enquiry(req: CollegeEnquiryIn):
 # ── Chat (advisor) ────────────────────────────────────────────────────────────
 
 @app.post("/api/chat")
-async def chat(msg: ChatMessage):
+async def chat(msg: ChatMessage, background_tasks: BackgroundTasks):
     if not groq_client and not gemini_client:
         return {
             "reply": "⚠️ No AI client is configured. Set GROQ_API_KEY or GOOGLE_GEMINI_API_KEY in your environment."
@@ -2232,23 +2238,29 @@ async def chat(msg: ChatMessage):
         options_summary = "\n".join(lines)
 
     perplexity_data = None
+    # 1. Determine the college name to search for (prefer explicit frontend selection, then message extraction)
     college_name    = msg.college_name or None
     college_branch  = msg.college_branch or ""
-    if not college_name and msg.use_perplexity and college_list:
-        first = college_list[0]
-        college_name = first.get("institute") or first.get("college")
-        college_branch = college_branch or first.get("program", "")
 
+    # Do not fallback to college_list[0] automatically, to prevent unnecessary scraping on general queries
     if not college_name and msg.message:
         college_name = _extract_college_name_from_message(msg.message)
+
     if college_name and msg.use_perplexity and not gemini_client:
-        loop = asyncio.get_event_loop()
+        # Check if scraped data is in cache
+        key = _make_key(college_name, college_branch)
         try:
-            perplexity_data = await loop.run_in_executor(
-                _executor, scrape_college_info, college_name, college_branch
-            )
+            cached_data = db_get_scrape(key)
+            if cached_data:
+                print(f"[CHAT] Perplexity cache hit for: {college_name}")
+                perplexity_data = cached_data
+            else:
+                print(f"[CHAT] Perplexity cache miss for: {college_name}. Triggering background scrape.")
+                background_tasks.add_task(
+                    scrape_college_info, college_name, college_branch
+                )
         except Exception as e:
-            print(f"[CHAT] Perplexity scrape failed: {e}")
+            print(f"[CHAT] Cache check or background task launch failed: {e}")
 
     system   = _build_counselor_system(
         msg.student_profile,
